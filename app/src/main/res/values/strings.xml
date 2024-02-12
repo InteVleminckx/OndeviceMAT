@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OndeviceMAT</string>
+    <string name="accessibility_service_label">Accessibility service description\n</string>
+</resources>
