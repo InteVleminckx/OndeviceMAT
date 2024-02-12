@@ -1,4 +1,5 @@
 <resources>
-    <string name="app_name">OndeviceMAT</string>
-    <string name="accessibility_service_label">Accessibility service description\n</string>
+    <string name="app_name">On-device-MAT</string>
+    <string name="accessibility_service_description">On-device mobile automation testing accessibility service.</string>
+    <string name="service_name_label">On-device MAT access service</string>
 </resources>

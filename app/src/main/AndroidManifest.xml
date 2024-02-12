@@ -29,6 +29,7 @@
             android:name=".MyAccessibilityService"
             android:enabled="true"
             android:exported="true"
+            android:label="@string/service_name_label"
             android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
             >
             <intent-filter>
