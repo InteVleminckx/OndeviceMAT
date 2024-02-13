@@ -2,6 +2,7 @@ package com.ondevice.mat
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.util.Log
@@ -10,24 +11,34 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView.ViewHolder
-
 
 class Adapter(context: Context) : BaseAdapter() {
 
-    val layoutInflater = LayoutInflater.from(context)
-
+    private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private val TAG: String = "DebugTag"
+
     private val appList: List<PackageInfo> by lazy {
         val packageManager: PackageManager = context.packageManager
         val packages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
-        packages.map { it }
+        packages
+            .filterNot { it.isSystemPackage() || it.isOwnTestApplication(context) }
+            .map { it }
     }
 
-    fun printApps() {
-        for (packageInfo in appList) {
-            Log.v(TAG, packageInfo.packageName)
-        }
+    /**
+     * Checks if a package is a system package, we don't want this in our app list because we don't want to test these applications.
+     * We only want the applications in the list that need to be tested.
+     * source: https://stackoverflow.com/questions/8784505/how-do-i-check-if-an-app-is-a-non-system-app-in-android
+     */
+    private fun PackageInfo.isSystemPackage(): Boolean {
+        return applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM != 0
+    }
+
+    /**
+     * Checks if a package is the package we use to start the tests. We don't want to include this in our application overview
+     */
+    private fun PackageInfo.isOwnTestApplication(context: Context): Boolean {
+        return context.packageName == applicationInfo.packageName
     }
 
     override fun getCount(): Int {
