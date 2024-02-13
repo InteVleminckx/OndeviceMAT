@@ -2,6 +2,8 @@ package com.ondevice.mat
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 
@@ -11,10 +13,9 @@ class MyAccessibilityService : AccessibilityService() {
     private val TAG = "DebugTag"
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-        Log.v(TAG, "onAccessibilityEvent")
-
         val packName: String = event?.packageName.toString()
-        Log.v(TAG, packName)
+        Log.v(TAG, "Event : ${event.toString()}")
+        Log.v(TAG, "onAccessibilityEvent : $packName")
     }
 
     override fun onInterrupt() {
