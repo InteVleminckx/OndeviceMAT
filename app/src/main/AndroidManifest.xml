@@ -28,7 +28,7 @@
 
         <!-- Accessibility service -->
         <service
-            android:name=".MyAccessibilityService"
+            android:name=".accessibility.MATAccessibilityService"
             android:enabled="true"
             android:exported="true"
             android:label="@string/service_name_label"
