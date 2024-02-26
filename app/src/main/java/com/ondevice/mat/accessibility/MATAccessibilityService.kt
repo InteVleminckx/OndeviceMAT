@@ -1,39 +1,34 @@
 package com.ondevice.mat.accessibility
 
 import android.accessibilityservice.AccessibilityService
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
-import android.view.accessibility.AccessibilityNodeInfo
 import com.ondevice.mat.automation.Automator
+import kotlinx.coroutines.*
 
-class MATAccessibilityService : AccessibilityService() {
+class MATAccessibilityService : AccessibilityService(), CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     private val TAG = "DebugTag"
-    private val eventFilter: EventFilter = EventFilter()
+    private val observers = mutableListOf<AccessibilityEventListener>()
+
     private val automator: Automator = Automator(this)
-    private val startUpDelay: Long = 5000
+
+
+    fun addObserver(observer: AccessibilityEventListener) {
+        observers.add(observer)
+    }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
-        val eventInfo: Map<String, String> = eventFilter.checkEvent(event)
+        observers.forEach { it.onAccessibilityEvent(event) }
 
-        val eventType: String = eventInfo["eventType"].toString()
-
-        if (eventType == "invalid") {
-            return
+        if (event?.packageName == this.packageName && !automator.applicationStarted) {
+            if (EventFilter().checkEvent(event, EventFilter.events.CLICK, Automator.targetApk, true)) {
+                launch {
+                    automator.start()
+                }
+            }
         }
-
-        val packageName: String = eventInfo["packageName"].toString()
-        val eventText: String = eventInfo["eventText"].toString()
-
-        if (eventType == "WindowStateChanged") {
-
-        }
-
-//        Log.v(TAG, eventInfo.toString())
-
 
     }
 
@@ -42,14 +37,17 @@ class MATAccessibilityService : AccessibilityService() {
     }
 
     override fun onServiceConnected() {
+        super.onServiceConnected()
         Log.v(TAG, "onServiceConnected")
-        automator.openApplication()
-        Handler(Looper.getMainLooper()).postDelayed({
-            automator.startTests()
-        }, startUpDelay)
-
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
 
+        observers.clear()
+
+        // Cancel the coroutine scope when the service is destroyed
+        cancel()
+    }
 
 }

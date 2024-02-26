@@ -1,63 +1,63 @@
 package com.ondevice.mat.automation
 
 import android.util.Log
-import com.ondevice.mat.Test
+import com.ondevice.mat.recorder.ScreenRecorderConnection
 import com.ondevice.mat.accessibility.MATAccessibilityService
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlin.math.E
 
 class Automator(accessService: MATAccessibilityService) {
 
-    private val TAG = "DebugTag"
     private val service: MATAccessibilityService = accessService
-    private var applicationStarted: Boolean = false
+    var applicationStarted: Boolean = false
+
     private val explorer: Explorer = Explorer()
-    private val interactor: Interactor = Interactor(service)
+    private val engine: Engine = Engine(service)
+
+    private val waitingTime: Long = 500
 
     companion object {
         var targetApk: String = ""
+        var permissionsChecked: Boolean = false
+        var screenRecorderConnection: ScreenRecorderConnection? = null
     }
 
-    fun openApplication() {
-        Log.v(TAG, "Open: $targetApk")
-        if (targetApk.isNotEmpty()) {
-            val intent = service.packageManager.getLaunchIntentForPackage(targetApk)
-            intent?.let {
-                // Start the app using the intent
-                service.startActivity(intent)
+    suspend fun start() {
 
-                // Wait until the app is loaded
-                while (!appIsFullyLoaded()) {
-                    continue
-                }
+        if (screenRecorderConnection != null) {
+            if (permissionsChecked && screenRecorderConnection!!.isActive()) {
+                Log.v("DebugTag", "Waiting for target apk")
+                waitForTargetApk()
+                Log.v("DebugTag", "Found target apk")
+                engine.setup(targetApk)
                 applicationStarted = true
+                startTests()
             }
         }
     }
 
-    private fun appIsFullyLoaded(): Boolean {
-        val rootNode = service.rootInActiveWindow
-        if (rootNode.packageName != targetApk) {
-            return false
+    private suspend fun waitForTargetApk() {
+        while (targetApk == "") {
+            delay(waitingTime)
         }
-        if (rootNode != null) {
-            val contentView = rootNode.findAccessibilityNodeInfosByViewId("android:id/content")
-            if (contentView.isEmpty()) {
-                return false
-            } else {
-                return true
-            }
-        }
-        return false
     }
 
-    fun startTests() {
+    private suspend fun startTests() {
         if (!applicationStarted) {
             return
         }
 
-        val testClass: Test = explorer.targetTestClass(targetApk) ?: return
-        testClass.interactor = interactor
-        testClass.runTests()
-
+        val testCase = explorer.targetTestClass(targetApk)
+        if (testCase != null) {
+            testCase.setup(engine)
+            testCase.runTests()
+        }
     }
+
 
 }

@@ -1,5 +1,6 @@
 package com.ondevice.mat.accessibility
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 
@@ -7,51 +8,80 @@ class EventFilter {
 
     private val TAG = "DebugTag"
 
-    fun checkEvent(event: AccessibilityEvent?): Map<String, String> {
-//        Log.v(TAG, event.toString())
+
+    enum class events {
+        CLICK, LONG_CLICK, SCROLL, SELECT, CHANGE_TEXT, CHANGE_TEXT_SELECTION, CHANGE_WINDOW, CHANGE_WINDOW_CONTENT, CHANGE_WINDOW_STATE, NONE
+    }
+
+    @SuppressLint("SwitchIntDef")
+    fun checkEvent(
+        event: AccessibilityEvent?, expectedType: events, expectedPackage: String, isStartPackage: Boolean = false
+    ): Boolean {
         if (event == null) {
-            return invalidMap()
+            return false
         }
 
-        if (event.eventType == AccessibilityEvent.TYPE_VIEW_CLICKED) {
-            return viewClicked(event)
-        } else if (event.eventType == AccessibilityEvent.TYPE_VIEW_FOCUSED) {
-            return viewFocused(event)
-        } else if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-            return windowStateChanged(event)
+        when (event.eventType) {
+            AccessibilityEvent.TYPE_VIEW_CLICKED -> return check(
+                event, events.CLICK, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_VIEW_LONG_CLICKED -> return check(
+                event, events.LONG_CLICK, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_VIEW_SCROLLED -> return check(
+                event, events.SCROLL, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_VIEW_SELECTED -> return check(
+                event, events.SELECT, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_VIEW_TEXT_CHANGED -> return check(
+                event, events.CHANGE_TEXT, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED -> return check(
+                event, events.CHANGE_TEXT_SELECTION, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_WINDOWS_CHANGED -> return check(
+                event, events.CHANGE_WINDOW, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED -> return check(
+                event, events.CHANGE_WINDOW_CONTENT, expectedType, expectedPackage, isStartPackage
+            )
+
+            AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED -> return check(
+                event, events.CHANGE_WINDOW_STATE, expectedType, expectedPackage, isStartPackage
+            )
         }
 
-        return invalidMap()
+        return false
     }
 
-    private fun invalidMap(): Map<String, String> {
-        return mapOf(
-            "eventType" to "invalid"
-        )
+    private fun check(
+        event: AccessibilityEvent,
+        checkType: events,
+        expectedType: events,
+        expectedPackage: String,
+        isStartPackage: Boolean = false
+    ): Boolean {
+
+        if (isStartPackage) {
+            return checkType == expectedType && retrieveStartPackageName(event) == expectedPackage
+        }
+
+        Log.v("DebugTag", "$checkType - ${event.packageName}")
+
+        return checkType == expectedType && event.packageName == expectedPackage
+
     }
 
-    private fun viewClicked(event: AccessibilityEvent): Map<String, String> {
-        return eventInfo(event, "ViewClicked")
-    }
 
-    private fun viewFocused(event: AccessibilityEvent): Map<String, String> {
-        return eventInfo(event, "ViewFocused")
-    }
-
-    private fun windowStateChanged(event: AccessibilityEvent): Map<String, String> {
-        return eventInfo(event, "WindowStateChanged")
-    }
-
-    private fun eventInfo(event: AccessibilityEvent, eventType: String): Map<String, String> {
-        return mapOf(
-            "eventType" to eventType,
-            "packageName" to retrievePackageName(event),
-            "eventText" to retrieveEventText(event)
-        )
-    }
-
-    private fun retrieveEventText(event: AccessibilityEvent): String {
-
+    private fun retrieveStartPackageName(event: AccessibilityEvent): String {
         val text: List<CharSequence> = event.text
 
         if (text.isEmpty()) {
@@ -59,10 +89,6 @@ class EventFilter {
         }
 
         return text.joinToString(" ")
-    }
-
-    private fun retrievePackageName(event: AccessibilityEvent): String {
-        return event.packageName.toString()
     }
 
 

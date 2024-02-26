@@ -1,12 +1,14 @@
 package com.ondevice.mat.automation
 
 import com.ondevice.mat.Test
-import com.ondevice.mat.tests.CalculatorTest
+import com.ondevice.mat.tests.JustSitTest
+import com.ondevice.mat.tests.TicTacToeTest
 
 class Explorer {
 
     private val testClasses: Map<String, Test> = mapOf(
-        CalculatorTest().packageName to CalculatorTest()
+        TicTacToeTest().packageName to TicTacToeTest(),
+        JustSitTest().packageName to JustSitTest()
     )
 
     fun targetTestClass(targetApk: String): Test? {
