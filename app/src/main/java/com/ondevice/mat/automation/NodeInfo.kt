@@ -5,6 +5,9 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.view.accessibility.AccessibilityNodeInfo
 
+/**
+ * Contains all necessary information about a component that easily can be accessed by the tester
+ */
 class NodeInfo(private val source: AccessibilityNodeInfo) {
 
     private fun stringConverter(input: Any?): String {

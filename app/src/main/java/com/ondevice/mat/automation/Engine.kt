@@ -27,8 +27,10 @@ class Engine(private val service: MATAccessibilityService) {
     suspend fun setup(apk: String) {
 
         targetApk = apk
+        // Let the event listener know which apk he must listen to
         eventListener.setTargetApk(targetApk)
 
+        // Start the apk with a start-up delay
         openApplication()
 
         Log.v("DebugTag", "Application started: $targetApk")
@@ -45,13 +47,18 @@ class Engine(private val service: MATAccessibilityService) {
         delay(startUpDelay)
     }
 
+    /**
+     * Returns content that is available in the current window
+     */
     private fun retrieveWindowContent(): List<NodeInfo> {
         parser.parseCurrentWindow()
         return parser.getParsedContent()
     }
 
     fun retrieveNode(searchTerm: String, searchType: searchTypes): NodeInfo? {
+        // First retrieve the content from the window
         val windowContent: List<NodeInfo> = retrieveWindowContent()
+        // Searches the component on the current window based on a particular search type and term
         return windowContent.firstOrNull { node ->
             when (searchType) {
                 searchTypes.TEXT -> node.nodeText().contains(searchTerm)
@@ -60,6 +67,10 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
+    /**
+     * Keeps checking if a particular interaction has been performed for a certain time.
+     * If the timeout passed by, we say that the interaction doesn't succeed
+     */
     private suspend fun checkInteractionSucceeded(): Boolean {
 
         return try {
@@ -74,6 +85,10 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
+    /**
+     * Keeps checking if the window content is still changing or not.
+     * If it keeps changing for longer than the timeout time, we say that the window doesn't stop changing
+     */
     private suspend fun checkWindowStoppedChanging(): Boolean {
         return try {
             withTimeout(timeoutTime) {
@@ -88,13 +103,19 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
-
+    /***
+     * Performs a click event on a particular component.
+     * @param node: the component that will be clicked
+     * @param target: to confirm if the click event did the right thing, we use a target component that must be visible on the screen after the click event occurred
+     * @param changesScreenContent: indicates if the screen content changes after performing some click
+     */
     suspend fun click(
         node: NodeInfo,
         target: Pair<String, searchTypes>,
         changesScreenContent: Boolean = true
     ): Boolean {
 
+        // First check if the node is even clickable
         if (!node.nodeIsClickable()) {
             Log.v("DebugTag", "Node isn't clickable")
             return false

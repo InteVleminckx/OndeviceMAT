@@ -29,13 +29,17 @@ class Automator(accessService: MATAccessibilityService) {
 
     suspend fun start() {
 
+        // Check if the screen recorder service is active and that all permissions are checked
         if (screenRecorderConnection != null) {
             if (permissionsChecked && screenRecorderConnection!!.isActive()) {
                 Log.v("DebugTag", "Waiting for target apk")
+                // Keeps checking until the target apk is set
                 waitForTargetApk()
                 Log.v("DebugTag", "Found target apk")
+                // sets up the engine, starts the application and waits until it is fully started
                 engine.setup(targetApk)
                 applicationStarted = true
+                // Start the tests for the application
                 startTests()
             }
         }

@@ -20,6 +20,8 @@ class ScreenRecorder {
     }
 
     private fun getOutputFolder(): String {
+        // Returns the output folder of the screenshots, if this folder doesn't exist
+        // The folder will be created
         val folder = File(Environment.getExternalStorageDirectory().toString() + "/" + folderName)
 
         val folderCreated = if (!folderExists(folder)) {
@@ -37,10 +39,12 @@ class ScreenRecorder {
     }
 
     private fun folderExists(folder: File): Boolean {
+        // Checks if the file exists and that it is a folder
         return folder.exists() && folder.isDirectory
     }
 
     fun takeScreenshot(imageReader: ImageReader, fileName: String) {
+        // Takes a screenshot of the current screen content
         try {
             val image: Image? = imageReader.acquireLatestImage()
 
@@ -71,6 +75,7 @@ class ScreenRecorder {
     }
 
     private fun saveBitmapToFile(bitmap: Bitmap, fileName: String) {
+        // Saves the bitmap as an image
         val file = File(folderPath, fileName)
 
         val outputStream = FileOutputStream(file)

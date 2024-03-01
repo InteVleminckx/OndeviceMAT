@@ -20,10 +20,14 @@ class MATAccessibilityService : AccessibilityService(), CoroutineScope by Corout
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
 
+        // Notify all observers with this accessibility event
         observers.forEach { it.onAccessibilityEvent(event) }
 
+        // Check an application is selected in the overview and check of no application is started
         if (event?.packageName == this.packageName && !automator.applicationStarted) {
+            // Check if it is a click event and an apk has been selected
             if (EventFilter().checkEvent(event, EventFilter.events.CLICK, Automator.targetApk, true)) {
+                // Start the automator with a coroutine scope
                 launch {
                     automator.start()
                 }
@@ -44,6 +48,7 @@ class MATAccessibilityService : AccessibilityService(), CoroutineScope by Corout
     override fun onDestroy() {
         super.onDestroy()
 
+        // Removes all the observers
         observers.clear()
 
         // Cancel the coroutine scope when the service is destroyed

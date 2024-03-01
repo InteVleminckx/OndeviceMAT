@@ -11,16 +11,14 @@ class MATApp : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(
-                "MATScreenRecorder",
-                "MAT Screen Recorder Notification",
-                NotificationManager.IMPORTANCE_HIGH
-            )
+        val channel = NotificationChannel(
+            "MATScreenRecorder",
+            "MAT Screen Recorder Notification",
+            NotificationManager.IMPORTANCE_HIGH
+        )
 
-            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
-        }
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
 
 
     }
