@@ -3,6 +3,7 @@ package com.ondevice.mat.tests
 import android.util.Log
 import com.ondevice.mat.Test
 import com.ondevice.mat.automation.Engine
+import com.ondevice.mat.automation.Interactor
 import com.ondevice.mat.automation.NodeInfo
 
 class TicTacToeTest : Test() {
@@ -13,7 +14,7 @@ class TicTacToeTest : Test() {
         super.runTests()
 
         if (engine != null) {
-            testTicTacToe()
+            testTicTacTwo()
         }
 
     }
@@ -30,7 +31,8 @@ class TicTacToeTest : Test() {
                 continue
             }
 
-            val clickSucceeded = engine?.click(interactionNode, Pair(interaction, Engine.searchTypes.RESOURCE_ID)) == true
+            val clickSucceeded =
+                engine?.click(interactionNode, Pair(interaction, Engine.searchTypes.RESOURCE_ID)) == true
 
             if (!clickSucceeded) {
                 Log.v("DebugTag", "Click failed")
@@ -42,6 +44,28 @@ class TicTacToeTest : Test() {
                 Log.v("DebugTag", "Node is marked: ${interactionNode.nodeText() != ""}")
             }
         }
+    }
+
+    private suspend fun testTicTacTwo() {
+
+        engine?.pressHome()
+
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+        engine?.swipe(Interactor.SwipeDirection.UP)
+
     }
 
 }

@@ -1,5 +1,6 @@
 package com.ondevice.mat.accessibility
 
+import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import java.time.LocalTime
 import java.time.temporal.ChronoUnit
@@ -72,6 +73,8 @@ class EventListener(service: MATAccessibilityService) : AccessibilityEventListen
         if (targetApk == "") {
             return
         }
+
+        Log.v("DebugTag", event.toString())
 
         if (expectedEvent != EventFilter.events.NONE && !eventPerformed) {
 

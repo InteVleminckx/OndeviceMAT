@@ -103,6 +103,25 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
+    /**
+     * Keeps checking if the target node is visible on the screen.
+     * If it keeps changing for longer than the timeout time, we say that the target node isn't on the screen
+     */
+    private suspend fun checkTargetNodeVisible(searchTerm: String, searchType: searchTypes): Boolean {
+        return try {
+            withTimeout(timeoutTime) {
+                while (retrieveNode(searchTerm, searchType) == null) {
+                    delay(checkDelay)
+                }
+            }
+            true
+
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+
     /***
      * Performs a click event on a particular component.
      * @param node: the component that will be clicked
@@ -131,7 +150,6 @@ class Engine(private val service: MATAccessibilityService) {
         var isInteractionSucceeded = checkInteractionSucceeded()
         Log.v("DebugTag", "Interaction succeed: $isInteractionSucceeded")
 
-
         // If the content of the screen need to be changed, check this happened and it stopped changing
         if (changesScreenContent) {
             if (checkWindowStoppedChanging()) {
@@ -151,6 +169,23 @@ class Engine(private val service: MATAccessibilityService) {
 
         // Let the tester now that the click is succeeded
         return isInteractionSucceeded
+    }
+
+    suspend fun swipe(direction: Interactor.SwipeDirection, target: Pair<String, searchTypes>? = null): Boolean {
+
+        interactor.swipe(direction)
+
+        if (target == null) {
+            return true
+        }
+
+        return checkTargetNodeVisible(target.first, target.second)
+
+
+    }
+
+    suspend fun pressHome() {
+        interactor.pressHome()
     }
 
 

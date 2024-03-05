@@ -18,33 +18,65 @@ class NodeInfo(private val source: AccessibilityNodeInfo) {
         return input.toString()
     }
 
-    fun nodeText(): String { return stringConverter(source.text) }
+    fun nodeText(): String {
+        return stringConverter(source.text)
+    }
 
-    fun nodeResourceId(): String { return stringConverter(source.viewIdResourceName) }
+    fun setText(newText: String) {
+        source.text = newText
+    }
 
-    fun nodeClass(): String { return stringConverter(source.className) }
+    fun nodeResourceId(): String {
+        return stringConverter(source.viewIdResourceName)
+    }
 
-    fun nodePackage(): String { return stringConverter(source.packageName) }
+    fun nodeClass(): String {
+        return stringConverter(source.className)
+    }
 
-    fun nodeContentDescription(): String { return stringConverter(source.contentDescription) }
+    fun nodePackage(): String {
+        return stringConverter(source.packageName)
+    }
 
-    fun nodeIsCheckable(): Boolean { return source.isCheckable }
+    fun nodeContentDescription(): String {
+        return stringConverter(source.contentDescription)
+    }
 
-    fun nodeIsChecked(): Boolean { return source.isChecked }
+    fun nodeIsCheckable(): Boolean {
+        return source.isCheckable
+    }
 
-    fun nodeIsClickable(): Boolean { return source.isClickable }
+    fun nodeIsChecked(): Boolean {
+        return source.isChecked
+    }
 
-    fun nodeIsEnabled(): Boolean { return source.isEnabled }
+    fun nodeIsClickable(): Boolean {
+        return source.isClickable
+    }
 
-    fun nodeIsFocusable(): Boolean { return source.isFocusable }
+    fun nodeIsEnabled(): Boolean {
+        return source.isEnabled
+    }
 
-    fun nodeIsScrollable(): Boolean { return source.isScrollable }
+    fun nodeIsFocusable(): Boolean {
+        return source.isFocusable
+    }
 
-    fun nodeIsLongClickable(): Boolean { return source.isLongClickable }
+    fun nodeIsScrollable(): Boolean {
+        return source.isScrollable
+    }
 
-    fun nodeIsPassword(): Boolean { return source.isPassword }
+    fun nodeIsLongClickable(): Boolean {
+        return source.isLongClickable
+    }
 
-    fun nodeIsSelected(): Boolean { return source.isSelected }
+    fun nodeIsPassword(): Boolean {
+        return source.isPassword
+    }
+
+    fun nodeIsSelected(): Boolean {
+        return source.isSelected
+    }
 
     fun nodeBoundaries(): Pair<Pair<Int, Int>, Pair<Int, Int>> {
         val rect = Rect()
@@ -56,6 +88,8 @@ class NodeInfo(private val source: AccessibilityNodeInfo) {
 
     fun performAction(action: Int) {
         source.performAction(action)
+
     }
+
 
 }
