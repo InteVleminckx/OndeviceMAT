@@ -1,12 +1,14 @@
 package com.ondevice.mat.automation;
 
-import android.text.BoringLayout
+import android.os.Bundle
 import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import com.ondevice.mat.accessibility.EventFilter
 import com.ondevice.mat.accessibility.EventListener
-import com.ondevice.mat.accessibility.MATAccessibilityService;
-import kotlinx.coroutines.*
+import com.ondevice.mat.accessibility.MATAccessibilityService
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeout
+
 
 class Engine(private val service: MATAccessibilityService) {
 
@@ -121,6 +123,19 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
+    private suspend fun checkTextBoxContent(requiredText: String, node: NodeInfo): Boolean {
+        return try {
+            withTimeout(timeoutTime) {
+                while (node.nodeText() != requiredText) {
+                    delay(checkDelay)
+                }
+            }
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
 
     /***
      * Performs a click event on a particular component.
@@ -151,7 +166,7 @@ class Engine(private val service: MATAccessibilityService) {
         Log.v("DebugTag", "Interaction succeed: $isInteractionSucceeded")
 
         // If the content of the screen need to be changed, check this happened and it stopped changing
-        if (changesScreenContent) {
+        if (changesScreenContent && isInteractionSucceeded) {
             if (checkWindowStoppedChanging()) {
                 Log.v("DebugTag", "Windows stopped changing")
                 isInteractionSucceeded = eventListener.windowContentHasBeenChanged()
@@ -166,6 +181,7 @@ class Engine(private val service: MATAccessibilityService) {
         isInteractionSucceeded = retrieveNode(target.first, target.second) != null
         Log.v("DebugTag", "Window contains target: $isInteractionSucceeded")
 
+        delay(100)
 
         // Let the tester now that the click is succeeded
         return isInteractionSucceeded
@@ -188,5 +204,58 @@ class Engine(private val service: MATAccessibilityService) {
         interactor.pressHome()
     }
 
+    suspend fun longClick(
+        node: NodeInfo,
+        target: Pair<String, searchTypes>,
+        changesScreenContent: Boolean = true
+    ): Boolean {
 
+        // First check if the node is even clickable
+        if (!node.nodeIsLongClickable()) {
+            Log.v("DebugTag", "Node isn't clickable")
+            return false
+        }
+
+        // Notify listener that some interaction will occur
+        eventListener.setExpectedEvent(EventFilter.events.LONG_CLICK)
+
+        // Perform interaction
+        interactor.longClick(node)
+
+        // Check if interaction found place using the listener
+        var isInteractionSucceeded = checkInteractionSucceeded()
+        Log.v("DebugTag", "Interaction succeed: $isInteractionSucceeded")
+
+        // If the content of the screen need to be changed, check this happened and it stopped changing
+        if (changesScreenContent && isInteractionSucceeded) {
+            if (checkWindowStoppedChanging()) {
+                Log.v("DebugTag", "Windows stopped changing")
+                isInteractionSucceeded = eventListener.windowContentHasBeenChanged()
+                Log.v("DebugTag", "Window has been changed: $isInteractionSucceeded")
+            }
+        }
+
+        // Reset the parameters for the next interaction
+        eventListener.resetExpected()
+
+        // Check if the current window contains the target
+        isInteractionSucceeded = retrieveNode(target.first, target.second) != null
+        Log.v("DebugTag", "Window contains target: $isInteractionSucceeded")
+
+        delay(100)
+
+        // Let the tester now that the click is succeeded
+        return isInteractionSucceeded
+    }
+
+
+    suspend fun fillTextBox(node: NodeInfo, text: String, searchTerm: String, searchType: searchTypes): Boolean {
+        interactor.setText(node, text)
+        val editedNode = retrieveNode(searchTerm, searchType) ?: return false
+        val result = checkTextBoxContent(text, editedNode)
+
+        delay(100)
+
+        return result
+    }
 }

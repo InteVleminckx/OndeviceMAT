@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.ListView
 import androidx.appcompat.app.AppCompatActivity
 import com.ondevice.mat.automation.Automator
+import com.ondevice.mat.automation.Explorer
 import com.ondevice.mat.recorder.ScreenRecorderConnection
 import com.ondevice.mat.recorder.ScreenRecorderService
 import java.io.File
@@ -37,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         val appList = findViewById<ListView>(R.id.installed_app_list)
 
         // Create adapter
-        val adapter = Adapter(this)
+        val adapter = Adapter(this, Explorer().getAvailableApplications())
         appList.adapter = adapter
 
         // If we press on an application, start the recorder and set some settings

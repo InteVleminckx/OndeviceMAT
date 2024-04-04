@@ -12,7 +12,7 @@ import android.view.ViewGroup
 import android.widget.BaseAdapter
 import android.widget.TextView
 
-class Adapter(context: Context) : BaseAdapter() {
+class Adapter(context: Context, availableApps: List<String>) : BaseAdapter() {
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
     private val TAG: String = "DebugTag"
@@ -20,9 +20,10 @@ class Adapter(context: Context) : BaseAdapter() {
     private val appList: List<PackageInfo> by lazy {
         val packageManager: PackageManager = context.packageManager
         val packages: List<PackageInfo> = packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+
         packages
-            .filterNot { it.isSystemPackage() || it.isOwnTestApplication(context) }
-            .map { it }
+            .filter { it.packageName in availableApps }
+//            .map { it }
     }
 
     /**

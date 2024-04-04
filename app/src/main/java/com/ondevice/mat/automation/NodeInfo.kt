@@ -1,6 +1,7 @@
 package com.ondevice.mat.automation
 
 import android.graphics.Rect
+import android.os.Bundle
 import android.os.Parcel
 import android.os.Parcelable
 import android.view.accessibility.AccessibilityNodeInfo
@@ -88,8 +89,18 @@ class NodeInfo(private val source: AccessibilityNodeInfo) {
 
     fun performAction(action: Int) {
         source.performAction(action)
-
     }
 
+    fun performAction(action: Int, bundleArguments: Bundle) {
+        source.performAction(action, bundleArguments)
+    }
+
+    fun getParent(): NodeInfo? {
+        if (source.parent == null) {
+            return null
+        }
+
+        return NodeInfo(source.parent)
+    }
 
 }

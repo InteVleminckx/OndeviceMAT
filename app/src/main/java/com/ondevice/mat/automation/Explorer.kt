@@ -1,8 +1,7 @@
 package com.ondevice.mat.automation
 
 import com.ondevice.mat.Test
-import com.ondevice.mat.tests.JustSitTest
-import com.ondevice.mat.tests.TicTacToeTest
+import com.ondevice.mat.tests.*
 
 /**
  * Contains all the tests cases licked to there packagename.
@@ -12,7 +11,10 @@ class Explorer {
 
     private val testClasses: Map<String, Test> = mapOf(
         TicTacToeTest().packageName to TicTacToeTest(),
-        JustSitTest().packageName to JustSitTest()
+        SimplyToDoTest().packageName to SimplyToDoTest(),
+        SudokuTest().packageName to SudokuTest(),
+        TabletopToolsTest().packageName to TabletopToolsTest(),
+        TippyTipperTest().packageName to TippyTipperTest()
     )
 
     fun targetTestClass(targetApk: String): Test? {
@@ -22,5 +24,10 @@ class Explorer {
         }
         return null
     }
+
+    fun getAvailableApplications(): List<String> {
+        return testClasses.keys.toList()
+    }
+
 
 }

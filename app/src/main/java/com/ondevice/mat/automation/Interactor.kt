@@ -3,6 +3,7 @@ package com.ondevice.mat.automation
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription
 import android.graphics.Path
+import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -11,8 +12,6 @@ import com.ondevice.mat.accessibility.MATAccessibilityService
 import kotlinx.coroutines.delay
 
 class Interactor(private val service: MATAccessibilityService) {
-
-    private val SWIPE_DISTANCE = 200
 
     private data class Coordinates(val startX: Float, val startY: Float, val endX: Float, val endY: Float)
 
@@ -40,6 +39,13 @@ class Interactor(private val service: MATAccessibilityService) {
 
         // Performs a click event
         node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
+        delay(100)
+    }
+
+    suspend fun longClick(node: NodeInfo) {
+
+        // Performs a click event
+        node.performAction(AccessibilityNodeInfo.ACTION_LONG_CLICK)
         delay(100)
     }
 
@@ -95,5 +101,16 @@ class Interactor(private val service: MATAccessibilityService) {
         delay(200)
 
     }
+    private fun createArgumentsBundle(text: String): Bundle {
+        val arguments = Bundle()
+        arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
+        return arguments
+    }
+
+    suspend fun setText(node: NodeInfo, text: String) {
+        node.performAction(AccessibilityNodeInfo.ACTION_SET_TEXT, createArgumentsBundle(text))
+        delay(100)
+    }
+
 
 }
