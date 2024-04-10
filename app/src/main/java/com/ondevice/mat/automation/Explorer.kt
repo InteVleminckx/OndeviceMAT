@@ -11,7 +11,7 @@ class Explorer {
 
     private val testClasses: Map<String, Test> = mapOf(
         TicTacToeTest().packageName to TicTacToeTest(),
-        SimplyToDoTest().packageName to SimplyToDoTest(),
+        SimpleDoTest().packageName to SimpleDoTest(),
         SudokuTest().packageName to SudokuTest(),
         TabletopToolsTest().packageName to TabletopToolsTest(),
         TippyTipperTest().packageName to TippyTipperTest()

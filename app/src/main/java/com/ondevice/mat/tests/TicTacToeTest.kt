@@ -7,6 +7,7 @@ import com.ondevice.mat.automation.Interactor
 import com.ondevice.mat.automation.NodeInfo
 import com.ondevice.mat.automation.Parser
 import kotlin.math.E
+import kotlin.system.measureTimeMillis
 
 class TicTacToeTest : Test() {
 
@@ -15,8 +16,13 @@ class TicTacToeTest : Test() {
     override suspend fun runTests() {
         super.runTests()
 
+        val numberOfInteractions = 1000
         if (engine != null) {
-            automaticTicTacToe()
+            Log.v(OUTPUT_TAG, "--- Starting Automatic TicTacToe Test ---")
+            val executionTime = measureTimeMillis {
+                automaticTicTacToe(numberOfInteractions)
+            }
+            Log.v(OUTPUT_TAG, "--- Automatic TicTacToe Test Finished ${numberOfInteractions} interactions in ${executionTime / 1000.0} seconds---")
         }
 
     }
@@ -98,7 +104,7 @@ class TicTacToeTest : Test() {
 
     }
 
-    private suspend fun getEmptyFields(board: Array<Array<String>>): List<Pair<Int, Int>> {
+    private fun getEmptyFields(board: Array<Array<String>>): List<Pair<Int, Int>> {
 
         val emptyMoves = mutableListOf<Pair<Int, Int>>()
 
@@ -113,13 +119,24 @@ class TicTacToeTest : Test() {
         return emptyMoves
     }
 
-    private suspend fun automaticTicTacToe() {
+    private suspend fun automaticTicTacToe(numberOfIterations: Int) {
 
         val human = "X"
         val phone = "0"
 
-        for (i in 0 until 100) {
-            val board = updateBoard() ?: return
+        var loopCompleted = false
+
+        for (i in 0 until numberOfIterations) {
+            val board = updateBoard() ?: break
+
+
+            if (i % 99 == 0 && i != 0) {
+                Log.v(OUTPUT_TAG, "--- Completed ${i + 1} iterations ---")
+            }
+
+            if (i == numberOfIterations - 1) {
+                loopCompleted = true
+            }
 
             // Check if there is a winning move
             val winningMove = getBestMove(human, board)
@@ -147,8 +164,9 @@ class TicTacToeTest : Test() {
             setMove(move)
         }
 
+        if (!loopCompleted) {
+            Log.v(OUTPUT_TAG, "--- Didn't completed all iterations ---")
+        }
 
     }
-
-
 }

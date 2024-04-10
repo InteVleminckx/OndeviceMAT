@@ -79,6 +79,10 @@ class NodeInfo(private val source: AccessibilityNodeInfo) {
         return source.isSelected
     }
 
+    fun childCount(): Int {
+        return source.childCount
+    }
+
     fun nodeBoundaries(): Pair<Pair<Int, Int>, Pair<Int, Int>> {
         val rect = Rect()
         source.getBoundsInScreen(rect)
@@ -101,6 +105,15 @@ class NodeInfo(private val source: AccessibilityNodeInfo) {
         }
 
         return NodeInfo(source.parent)
+    }
+
+    fun getChild(index: Int): NodeInfo? {
+
+        if (source.childCount <= index) {
+            return null
+        }
+
+        return NodeInfo(source.getChild(index))
     }
 
 }

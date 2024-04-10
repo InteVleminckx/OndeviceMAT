@@ -1,11 +1,14 @@
 package com.ondevice.mat.automation
 
+import android.util.Log
 import android.view.accessibility.AccessibilityNodeInfo
 import com.ondevice.mat.accessibility.MATAccessibilityService
+import org.json.JSONException
 
 class Parser(private val service: MATAccessibilityService) {
 
     private val parsedContent: MutableList<NodeInfo> = mutableListOf()
+    private val allNodes: MutableList<NodeInfo> = mutableListOf()
 
     /**
      * Parses the current window content and only saves the leaf nodes.
@@ -13,6 +16,7 @@ class Parser(private val service: MATAccessibilityService) {
      */
     fun parseCurrentWindow() {
         parsedContent.clear()
+        allNodes.clear()
         parse(service.rootInActiveWindow)
     }
 
@@ -21,21 +25,37 @@ class Parser(private val service: MATAccessibilityService) {
      */
     private fun parse(node: AccessibilityNodeInfo) {
 
-        if (node.childCount == 0) {
-            parsedContent.add(NodeInfo(node))
-        }
+        try {
+            val nodeInfo = NodeInfo(node)
 
-        for (i in 0..node.childCount) {
+            allNodes.add(nodeInfo)
 
-            if (i < node.childCount) {
-                val child = node.getChild(i)
-                parse(child)
+            if (node.childCount == 0) {
+                parsedContent.add(nodeInfo)
             }
+
+            for (i in 0..node.childCount) {
+
+                if (i < node.childCount) {
+                    val child = node.getChild(i) ?: continue
+                    parse(child)
+                }
+            }
+
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            return
         }
+
+
     }
 
     fun getParsedContent(): List<NodeInfo> {
         return parsedContent
+    }
+
+    fun getAllNodes(): List<NodeInfo> {
+        return allNodes
     }
 
 }

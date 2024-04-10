@@ -57,10 +57,15 @@ class Engine(private val service: MATAccessibilityService) {
         return parser.getParsedContent()
     }
 
-    fun retrieveNode(searchTerm: String, searchType: searchTypes): NodeInfo? {
+    private fun getAllNodes(): List<NodeInfo> {
+        parser.parseCurrentWindow()
+        return parser.getAllNodes()
+    }
+
+    fun retrieveNode(searchTerm: String, searchType: searchTypes, allNodes: Boolean = false): NodeInfo? {
         // First retrieve the content from the window
-        val windowContent: List<NodeInfo> = retrieveWindowContent()
-        // Searches the component on the current window based on a particular search type and term
+        val windowContent: List<NodeInfo> = if (!allNodes) { retrieveWindowContent() } else { getAllNodes() }
+            // Searches the component on the current window based on a particular search type and term
         return windowContent.firstOrNull { node ->
             when (searchType) {
                 searchTypes.TEXT -> node.nodeText().contains(searchTerm)
@@ -146,7 +151,8 @@ class Engine(private val service: MATAccessibilityService) {
     suspend fun click(
         node: NodeInfo,
         target: Pair<String, searchTypes>,
-        changesScreenContent: Boolean = true
+        changesScreenContent: Boolean = true,
+        coordinates: Boolean = false
     ): Boolean {
 
         // First check if the node is even clickable
@@ -159,7 +165,63 @@ class Engine(private val service: MATAccessibilityService) {
         eventListener.setExpectedEvent(EventFilter.events.CLICK)
 
         // Perform interaction
-        interactor.click(node)
+        if (coordinates) {
+            interactor.clickCoordinates(node)
+        }
+        else {
+            interactor.click(node)
+        }
+
+        // Check if interaction found place using the listener
+        var isInteractionSucceeded = checkInteractionSucceeded()
+        Log.v("DebugTag", "Interaction succeed: $isInteractionSucceeded")
+
+        // If the content of the screen need to be changed, check this happened and it stopped changing
+        if (changesScreenContent && isInteractionSucceeded) {
+            if (checkWindowStoppedChanging()) {
+                Log.v("DebugTag", "Windows stopped changing")
+                isInteractionSucceeded = eventListener.windowContentHasBeenChanged()
+                Log.v("DebugTag", "Window has been changed: $isInteractionSucceeded")
+            }
+        }
+
+        // Reset the parameters for the next interaction
+        eventListener.resetExpected()
+
+        // Check if the current window contains the target
+        isInteractionSucceeded = retrieveNode(target.first, target.second) != null
+        Log.v("DebugTag", "Window contains target: $isInteractionSucceeded")
+
+        delay(100)
+
+        // Let the tester now that the click is succeeded
+        return isInteractionSucceeded
+    }
+
+
+    suspend fun removeClick(
+        node: NodeInfo,
+        target: Pair<String, searchTypes>,
+        changesScreenContent: Boolean = true,
+        coordinates: Boolean = false
+    ): Boolean {
+
+        // First check if the node is even clickable
+        if (!node.nodeIsClickable()) {
+            Log.v("DebugTag", "Node isn't clickable")
+            return false
+        }
+
+        // Notify listener that some interaction will occur
+        eventListener.setExpectedEvent(EventFilter.events.SCROLL)
+
+        // Perform interaction
+        if (coordinates) {
+            interactor.clickCoordinates(node)
+        }
+        else {
+            interactor.click(node)
+        }
 
         // Check if interaction found place using the listener
         var isInteractionSucceeded = checkInteractionSucceeded()
@@ -202,6 +264,24 @@ class Engine(private val service: MATAccessibilityService) {
 
     suspend fun pressHome() {
         interactor.pressHome()
+    }
+
+    suspend fun pressBack(target: Pair<String, searchTypes>): Boolean {
+
+        interactor.pressBack()
+
+        var isInteractionSucceeded: Boolean
+        if (checkWindowStoppedChanging()) {
+            Log.v("DebugTag", "Windows stopped changing")
+            isInteractionSucceeded = eventListener.windowContentHasBeenChanged()
+            Log.v("DebugTag", "Window has been changed: $isInteractionSucceeded")
+        }
+
+        isInteractionSucceeded = retrieveNode(target.first, target.second) != null
+        Log.v("DebugTag", "Window contains target: $isInteractionSucceeded")
+
+        return isInteractionSucceeded
+
     }
 
     suspend fun longClick(

@@ -25,9 +25,10 @@ class Interactor(private val service: MATAccessibilityService) {
         delay(2500)
     }
 
-    fun pressBack() {
+    suspend fun pressBack() {
         // Press the back button
         service.performGlobalAction(AccessibilityService.GLOBAL_ACTION_BACK)
+        delay(100)
     }
 
     fun pressRecentApps() {
@@ -40,7 +41,29 @@ class Interactor(private val service: MATAccessibilityService) {
         // Performs a click event
         node.performAction(AccessibilityNodeInfo.ACTION_CLICK)
         delay(100)
+
     }
+
+    suspend fun clickCoordinates(node: NodeInfo) {
+
+        val bounds = node.nodeBoundaries()
+
+        val topLeft = bounds.first
+        val bottomRight = bounds.second
+
+        val posX = topLeft.second + ((bottomRight.second - topLeft.second) / 2)
+        val posY = topLeft.first + ((bottomRight.first - topLeft.first) / 2)
+
+        val path = Path()
+        path.moveTo(posX.toFloat(), posY.toFloat())
+
+        val gestureBuilder = GestureDescription.Builder()
+        gestureBuilder.addStroke(GestureDescription.StrokeDescription(path, 0, 50))
+
+        service.dispatchGesture(gestureBuilder.build(), null, null)
+        delay(100)
+    }
+
 
     suspend fun longClick(node: NodeInfo) {
 
@@ -99,8 +122,8 @@ class Interactor(private val service: MATAccessibilityService) {
 
         service.dispatchGesture(gestureBuilder.build(), null, null)
         delay(200)
-
     }
+
     private fun createArgumentsBundle(text: String): Bundle {
         val arguments = Bundle()
         arguments.putCharSequence(AccessibilityNodeInfo.ACTION_ARGUMENT_SET_TEXT_CHARSEQUENCE, text)
