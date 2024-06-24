@@ -13,18 +13,14 @@ class TicTacToeTest : Test() {
 
     override val packageName = "ug.lecode.tictactoe"
 
+    init {
+        appName = "TicTicToe"
+    }
+
     override suspend fun runTests() {
         super.runTests()
 
-        val numberOfInteractions = 1000
-        if (engine != null) {
-            Log.v(OUTPUT_TAG, "--- Starting Automatic TicTacToe Test ---")
-            val executionTime = measureTimeMillis {
-                automaticTicTacToe(numberOfInteractions)
-            }
-            Log.v(OUTPUT_TAG, "--- Automatic TicTacToe Test Finished ${numberOfInteractions} interactions in ${executionTime / 1000.0} seconds---")
-        }
-
+        executeTest(::automaticTicTacToe, 1000, "Tic Tac Toe")
     }
 
     private fun updateBoard(): Array<Array<String>>? {
@@ -92,15 +88,19 @@ class TicTacToeTest : Test() {
         return null
     }
 
-    private suspend fun setMove(position: Pair<Int, Int>): Boolean {
+    private suspend fun setMove(position: Pair<Int, Int>): Pair<Boolean, String> {
 
         val resourceId: String = getIdResource(position.first, position.second)
 
-        val square: NodeInfo = engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return false
+        val square: NodeInfo = engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return Pair(false, "Failed to retrieve node with resource id: $resourceId")
 
-        val clickSucceed = engine?.click(square, Pair(resourceId, Engine.searchTypes.RESOURCE_ID)) ?: return false
+        val clickSucceed = engine?.click(square, Pair(resourceId, Engine.searchTypes.RESOURCE_ID)) ?: return Pair(false, "Failed to retrieve node with resource id: $resourceId")
 
-        return clickSucceed
+        if (!clickSucceed) {
+            return Pair(false, "Failed to click the object with resource id: $resourceId")
+        }
+
+        return Pair(true, "Successfully clicked node: $resourceId")
 
     }
 
@@ -119,30 +119,28 @@ class TicTacToeTest : Test() {
         return emptyMoves
     }
 
-    private suspend fun automaticTicTacToe(numberOfIterations: Int) {
+    private suspend fun automaticTicTacToe(numberOfIterations: Int): Pair<Boolean, String> {
 
         val human = "X"
         val phone = "0"
 
-        var loopCompleted = false
-
         for (i in 0 until numberOfIterations) {
-            val board = updateBoard() ?: break
+            val board = updateBoard() ?: return Pair(false, "Failed to update the tic tac toe bord.")
 
 
             if (i % 99 == 0 && i != 0) {
                 Log.v(OUTPUT_TAG, "--- Completed ${i + 1} iterations ---")
             }
 
-            if (i == numberOfIterations - 1) {
-                loopCompleted = true
-            }
-
             // Check if there is a winning move
             val winningMove = getBestMove(human, board)
             if (winningMove != null) {
                 board[winningMove.first][winningMove.second] = human
-                setMove(winningMove)
+                val moveValue = setMove(winningMove)
+                if (!moveValue.first) {
+                    return moveValue
+                }
+                logToFile(moveValue.second)
                 continue
             }
 
@@ -150,7 +148,11 @@ class TicTacToeTest : Test() {
             val blockingMove = getBestMove(phone, board)
             if (blockingMove != null) {
                 board[blockingMove.first][blockingMove.second] = human
-                setMove(blockingMove)
+                val moveValue = setMove(blockingMove)
+                if (!moveValue.first) {
+                    return moveValue
+                }
+                logToFile(moveValue.second)
                 continue
             }
 
@@ -161,12 +163,14 @@ class TicTacToeTest : Test() {
 
             val move = preferredMove ?: emptyFields.random()
             board[move.first][move.second] = human
-            setMove(move)
+            val moveValue = setMove(move)
+            if (!moveValue.first) {
+                return moveValue
+            }
+            logToFile(moveValue.second)
+
         }
 
-        if (!loopCompleted) {
-            Log.v(OUTPUT_TAG, "--- Didn't completed all iterations ---")
-        }
-
+        return Pair(true, "Successfully executed the tic tac toe test.")
     }
 }

@@ -19,150 +19,208 @@ class SudokuTest : Test() {
         BEGINNER, EASY, MEDIUM, HARD
     }
 
+    init {
+        appName = "Sudoku"
+    }
+
     override suspend fun runTests() {
         super.runTests()
 
         if (engine != null) {
             Log.v(OUTPUT_TAG, "--- Starting Automatic Sudoku Test ---")
-            val executionTime = measureTimeMillis {
-                Log.v(OUTPUT_TAG, "--- Starting beginner difficulty ---")
-                beginnerDiffTest()
+            Log.v(OUTPUT_TAG, "--- Starting beginner difficulty ---")
+            executeTest(::beginnerDiffTest, 1, "Sudoku-Beginner-Difficulty")
 
-                Log.v(OUTPUT_TAG, "--- Starting easy difficulty ---")
-                easyDiffTest()
+            Log.v(OUTPUT_TAG, "--- Starting easy difficulty ---")
+            executeTest(::easyDiffTest, 1, "Sudoku-Easy-Difficulty")
 
-                Log.v(OUTPUT_TAG, "--- Starting medium difficulty ---")
-                mediumDiffTest()
 
-                Log.v(OUTPUT_TAG, "--- Starting hard difficulty ---")
-                hardDiffTest()
-            }
-            Log.v(
-                OUTPUT_TAG,
-                "--- Automatic Sudoku Test Finished 4 difficulties in ${executionTime / 1000.0} seconds---"
-            )
+            Log.v(OUTPUT_TAG, "--- Starting medium difficulty ---")
+            executeTest(::mediumDiffTest, 1, "Sudoku-Medium-Difficulty")
+
+            Log.v(OUTPUT_TAG, "--- Starting hard difficulty ---")
+            executeTest(::hardDiffTest, 0, "Sudoku-Hard-Difficulty")
         }
     }
 
-    private suspend fun beginnerDiffTest() {
+    private suspend fun beginnerDiffTest(x: Int): Pair<Boolean, String> {
 
-        if (!clickNewPuzzle()) {
-            return
-        }
-        if (!selectDifficulty(Difficulties.BEGINNER)) {
-            return
-        }
-        if (!startPuzzle()) {
-            return
+        var result = clickNewPuzzle()
+
+        if (!result.first) {
+            return result
         }
 
-        val nodeBoard = collectBoard() ?: return
+        result = selectDifficulty(Difficulties.BEGINNER)
+        if (!result.first) {
+            return result
+        }
+
+        result = startPuzzle()
+        if (!result.first) {
+            return result
+        }
+
+        val nodeBoard = collectBoard() ?: return Pair(false, "Failed to collect the board.")
         val board = convertBoard(nodeBoard)
 
         if (solveSudoku(board)) {
             val sudokuFinished = fillInSudoku(board, nodeBoard)
 
-            if (!sudokuFinished) {
-                return
+            if (!sudokuFinished.first) {
+                return sudokuFinished
             }
 
             engine?.pressBack(Pair("New_Game", Engine.searchTypes.RESOURCE_ID))
+
+            return sudokuFinished
         }
 
+        return Pair(false, "Failed to solve the sudoku")
     }
 
-    private suspend fun easyDiffTest() {
-        if (!clickNewPuzzle()) {
-            return
-        }
-        if (!selectDifficulty(Difficulties.EASY)) {
-            return
-        }
-        if (!startPuzzle()) {
-            return
+    private suspend fun easyDiffTest(x: Int): Pair<Boolean, String> {
+        var result = clickNewPuzzle()
+
+        if (!result.first) {
+            return result
         }
 
-        val nodeBoard = collectBoard() ?: return
+        result = selectDifficulty(Difficulties.EASY)
+        if (!result.first) {
+            return result
+        }
+
+        result = startPuzzle()
+        if (!result.first) {
+            return result
+        }
+
+        val nodeBoard = collectBoard() ?: return Pair(false, "Failed to collect the board.")
         val board = convertBoard(nodeBoard)
 
         if (solveSudoku(board)) {
             val sudokuFinished = fillInSudoku(board, nodeBoard)
 
-            if (!sudokuFinished) {
-                return
+            if (!sudokuFinished.first) {
+                return sudokuFinished
             }
 
             engine?.pressBack(Pair("New_Game", Engine.searchTypes.RESOURCE_ID))
+
+            return sudokuFinished
         }
+
+        return Pair(false, "Failed to solve the sudoku")
     }
 
-    private suspend fun mediumDiffTest() {
-        if (!clickNewPuzzle()) {
-            return
-        }
-        if (!selectDifficulty(Difficulties.MEDIUM)) {
-            return
-        }
-        if (!startPuzzle()) {
-            return
+    private suspend fun mediumDiffTest(x: Int): Pair<Boolean, String> {
+        var result = clickNewPuzzle()
+
+        if (!result.first) {
+            return result
         }
 
-        val nodeBoard = collectBoard() ?: return
+        result = selectDifficulty(Difficulties.MEDIUM)
+        if (!result.first) {
+            return result
+        }
+
+        result = startPuzzle()
+        if (!result.first) {
+            return result
+        }
+
+        val nodeBoard = collectBoard() ?: return Pair(false, "Failed to collect the board.")
         val board = convertBoard(nodeBoard)
 
         if (solveSudoku(board)) {
             val sudokuFinished = fillInSudoku(board, nodeBoard)
 
-            if (!sudokuFinished) {
-                return
+            if (!sudokuFinished.first) {
+                return sudokuFinished
             }
 
             engine?.pressBack(Pair("New_Game", Engine.searchTypes.RESOURCE_ID))
+
+            return sudokuFinished
         }
+
+        return Pair(false, "Failed to solve the sudoku")
     }
 
-    private suspend fun hardDiffTest() {
-        if (!clickNewPuzzle()) {
-            return
-        }
-        if (!selectDifficulty(Difficulties.HARD)) {
-            return
-        }
-        if (!startPuzzle()) {
-            return
+    private suspend fun hardDiffTest(x: Int): Pair<Boolean, String> {
+        var result = clickNewPuzzle()
+
+        if (!result.first) {
+            return result
         }
 
-        val nodeBoard = collectBoard() ?: return
+        result = selectDifficulty(Difficulties.HARD)
+        if (!result.first) {
+            return result
+        }
+
+        result = startPuzzle()
+        if (!result.first) {
+            return result
+        }
+
+        val nodeBoard = collectBoard() ?: return Pair(false, "Failed to collect the board.")
         val board = convertBoard(nodeBoard)
 
         if (solveSudoku(board)) {
             val sudokuFinished = fillInSudoku(board, nodeBoard)
 
-            if (!sudokuFinished) {
-                return
+            if (!sudokuFinished.first) {
+                return sudokuFinished
             }
 
             engine?.pressBack(Pair("New_Game", Engine.searchTypes.RESOURCE_ID))
+
+            return sudokuFinished
         }
+
+        return Pair(false, "Failed to solve the sudoku")
     }
 
-    private suspend fun clickNewPuzzle(): Boolean {
+    private suspend fun clickNewPuzzle(): Pair<Boolean, String> {
         val resourceId = "New_Game"
         val target = Pair("play", Engine.searchTypes.RESOURCE_ID)
-        val newPuzzleButton = engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return false
+        val newPuzzleButton =
+            engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return Pair(
+                false,
+                "Failed to retrieve the node with resource id: $resourceId"
+            )
 
-        return engine?.click(newPuzzleButton, target) ?: false
+        val clickSucceed = engine?.click(newPuzzleButton, target) == true
+
+        if (!clickSucceed) {
+            return Pair(false, "Failed to click the new game button")
+        }
+
+        return Pair(true, "Successfully clicked the new game button")
     }
 
-    private suspend fun startPuzzle(): Boolean {
+    private suspend fun startPuzzle(): Pair<Boolean, String> {
         val resourceId = "play"
         val target = Pair("button_1", Engine.searchTypes.RESOURCE_ID)
-        val playButton = engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return false
+        val playButton =
+            engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return Pair(
+                false,
+                "Failed to retrieve the node with resource id: $resourceId"
+            )
 
-        return engine?.click(playButton, target) ?: false
+        val clickSucceed = engine?.click(playButton, target) == true
+
+        if (!clickSucceed) {
+            return Pair(false, "Failed to click the play button to start the puzzle.")
+        }
+
+        return Pair(true, "Successfully clicked the play button to start the puzzle.")
     }
 
-    private suspend fun selectDifficulty(difficulty: Difficulties): Boolean {
+    private suspend fun selectDifficulty(difficulty: Difficulties): Pair<Boolean, String> {
         val textField = when (difficulty) {
             Difficulties.BEGINNER -> "BEGINNER"
             Difficulties.EASY -> "EASY"
@@ -171,15 +229,23 @@ class SudokuTest : Test() {
         }
         val target = Pair("play", Engine.searchTypes.RESOURCE_ID)
 
-        val innerNode = engine?.retrieveNode(textField, Engine.searchTypes.TEXT) ?: return false
+        val innerNode = engine?.retrieveNode(textField, Engine.searchTypes.TEXT) ?: return Pair(
+            false,
+            "Failed to retrieve the node with text: $textField"
+        )
         val clickableNode = innerNode.getParent()
         if (clickableNode != null) {
-            return engine?.click(clickableNode, target) ?: false
+
+            val clickSucceed = engine?.click(clickableNode, target) == true
+            if (!clickSucceed) {
+                return Pair(false, "Failed to click the button to select difficulty: $textField")
+            }
+            return Pair(true, "Successfully clicked the button to select difficulty: $textField")
         }
-        return false
+        return Pair(false, "Failed to click the button to select difficulty: $textField")
     }
 
-    private suspend fun clickInputButton(input: Inputs): Boolean {
+    private suspend fun clickInputButton(input: Inputs): Pair<Boolean, String> {
         val resourceId = when (input) {
             Inputs.ONE -> "button_1"
             Inputs.TWO -> "button_2"
@@ -193,15 +259,38 @@ class SudokuTest : Test() {
         }
 
         val target = Pair("button_1", Engine.searchTypes.RESOURCE_ID)
-        val inputButton = engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return false
+        val inputButton =
+            engine?.retrieveNode(resourceId, Engine.searchTypes.RESOURCE_ID) ?: return Pair(
+                false,
+                "Failed to retrieve the node with resource id: $resourceId"
+            )
 
-        return engine?.click(inputButton, target) ?: false
+        val clickSucceed = engine?.click(inputButton, target) == true
+
+        if (!clickSucceed) {
+            return Pair(false, "Failed to click the button with resource id: $resourceId")
+        }
+
+        return Pair(true, "Successfully clicked the button with resource id: $resourceId")
 
     }
 
-    private suspend fun clickSquare(nodeInfo: NodeInfo): Boolean {
+    private suspend fun clickSquare(nodeInfo: NodeInfo): Pair<Boolean, String> {
         val target = Pair("button_1", Engine.searchTypes.RESOURCE_ID)
-        return engine?.click(nodeInfo, target, coordinates = true) ?: false
+
+        val clickSucceed = engine?.click(nodeInfo, target, coordinates = true) == true
+
+        if (!clickSucceed) {
+            return Pair(
+                false,
+                "Failed to click on the input square on location: ${nodeInfo.nodeBoundaries()}"
+            )
+        }
+
+        return Pair(
+            true,
+            "Successfully clicked the square on location: ${nodeInfo.nodeBoundaries()}"
+        )
     }
 
     private fun getInput(value: Int): Inputs? {
@@ -241,7 +330,8 @@ class SudokuTest : Test() {
 
         val tableId = "tableId"
         val fullBoardNode =
-            engine?.retrieveNode(tableId, Engine.searchTypes.RESOURCE_ID, allNodes = true) ?: return null
+            engine?.retrieveNode(tableId, Engine.searchTypes.RESOURCE_ID, allNodes = true)
+                ?: return null
 
         var curRow = 0
 
@@ -342,37 +432,51 @@ class SudokuTest : Test() {
 
     }
 
-    private suspend fun fillInSudoku(board: Array<IntArray>, nodeBoard: Array<Array<NodeInfo?>>): Boolean {
+    private suspend fun fillInSudoku(
+        board: Array<IntArray>,
+        nodeBoard: Array<Array<NodeInfo?>>
+    ): Pair<Boolean, String> {
 
         var emptySquares = getNumberOfEmptySquares(nodeBoard)
 
         for (row in nodeBoard.indices) {
             for (col in nodeBoard[row].indices) {
-                val square = nodeBoard[row][col] ?: return false
+                val square = nodeBoard[row][col] ?: return Pair(
+                    false,
+                    "Failed to retrieve the square on row: $row and column: $col"
+                )
                 if (square.nodeText() == "") {
 
                     val squareClicked = clickSquare(square)
 
-                    if (!squareClicked) {
-                        return false
+                    if (!squareClicked.first) {
+                        return squareClicked
                     }
 
+                    logToFile(squareClicked.second)
+
                     val value = board[row][col]
-                    val inputValue = getInput(value) ?: return false
+                    val inputValue = getInput(value) ?: return Pair(
+                        false,
+                        "Failed to retrieve the input value for value: $value"
+                    )
 
 
                     val filledSquare = clickInputButton(inputValue)
 
-                    if (!filledSquare && emptySquares > 1) {
-                        return false
-                    } else if (!filledSquare) {
+                    if (!filledSquare.first && emptySquares > 1) {
+                        return filledSquare
+                    } else if (!filledSquare.first) {
                         delay(500)
-                        return true
+                        return Pair(true, "Successfully filled in the sudoku")
                     }
+
+                    logToFile(filledSquare.second)
+
                     emptySquares--
                 }
             }
         }
-        return true
+        return Pair(true, "Successfully filled in the sudoku")
     }
 }

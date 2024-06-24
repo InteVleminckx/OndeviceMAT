@@ -29,26 +29,23 @@ class TippyTipperTest : Test() {
         ONE, TWO, THREE
     }
 
+    init {
+        appName = "TippyTipper"
+    }
+
     override suspend fun runTests() {
         super.runTests()
-        val numberOfInteractions = 1000
-        if (engine != null) {
-            Log.v(OUTPUT_TAG, "--- Starting Full Application Test ---")
-            val executionTime = measureTimeMillis {
-                fullApplicationTest(numberOfInteractions)
-            }
-            Log.v(OUTPUT_TAG, "--- Full Application Test Finished ${numberOfInteractions} interactions in ${executionTime / 1000.0} seconds---")
-        }
+
+        executeTest(::fullApplicationTest, 1000, "TippyTipper")
 
     }
 
-    private suspend fun fullApplicationTest(iterations: Int) {
+    private suspend fun fullApplicationTest(iterations: Int): Pair<Boolean, String> {
 
         var curScreen = Screen.ONE
         var buttons = getButtons(curScreen)
         var nextScreen: Screen
         var target: Pair<String, searchTypes>?
-        var loopCompleted = false
 
         for (i in 0 until iterations) {
 
@@ -69,15 +66,15 @@ class TippyTipperTest : Test() {
             target = getTarget(nextScreen)
             var interactionSucceed: Boolean
             if (button == ButtonsScreenTwo.BACK1 || button == ButtonsScreenThree.BACK2) {
-                interactionSucceed = engine?.pressBack(target) ?: break
+                interactionSucceed = engine?.pressBack(target) ?: return Pair(false, "Failed to press back")
             } else {
                 val resourceId = getResourceId(curScreen, button)
-                val buttonNode: NodeInfo = engine?.retrieveNode(resourceId, searchTypes.RESOURCE_ID) ?: break
+                val buttonNode: NodeInfo = engine?.retrieveNode(resourceId, searchTypes.RESOURCE_ID) ?: return Pair(false, "Failed to retrieve node with resource id: $resourceId")
                 interactionSucceed = engine?.click(buttonNode, target) == true
             }
 
             if (!interactionSucceed) {
-                break
+                return Pair(false, "Failed to press button: $button")
             }
 
             curScreen = nextScreen
@@ -86,16 +83,11 @@ class TippyTipperTest : Test() {
             if (i % 99 == 0 && i != 0) {
                 Log.v(OUTPUT_TAG, "--- Completed ${i + 1} iterations ---")
             }
-
-            if (i == iterations - 1) {
-                loopCompleted = true
-            }
+            logToFile("Successfully clicked button: $button")
 
         }
 
-        if (!loopCompleted) {
-            Log.v(OUTPUT_TAG, "--- Didn't completed all iterations ---")
-        }
+        return Pair(true, "Successfully finished tippy tipper test.")
 
     }
 

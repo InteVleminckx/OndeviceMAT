@@ -13,7 +13,6 @@ class Explorer {
         TicTacToeTest().packageName to TicTacToeTest(),
         SimpleDoTest().packageName to SimpleDoTest(),
         SudokuTest().packageName to SudokuTest(),
-        TabletopToolsTest().packageName to TabletopToolsTest(),
         TippyTipperTest().packageName to TippyTipperTest()
     )
 
