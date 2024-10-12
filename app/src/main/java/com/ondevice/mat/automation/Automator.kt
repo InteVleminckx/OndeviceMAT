@@ -43,6 +43,17 @@ class Automator(accessService: MATAccessibilityService) {
                 startTests()
             }
         }
+//        if (permissionsChecked) {
+//            Log.v("DebugTag", "Waiting for target apk")
+//            // Keeps checking until the target apk is set
+//            waitForTargetApk()
+//            Log.v("DebugTag", "Found target apk")
+//            // sets up the engine, starts the application and waits until it is fully started
+//            engine.setup(targetApk)
+//            applicationStarted = true
+//            // Start the tests for the application
+//            startTests()
+//        }
     }
 
     private suspend fun waitForTargetApk() {

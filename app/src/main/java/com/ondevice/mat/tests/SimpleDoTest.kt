@@ -3,6 +3,7 @@ package com.ondevice.mat.tests;
 import android.util.Log
 import com.ondevice.mat.Test
 import com.ondevice.mat.automation.Engine
+import kotlinx.coroutines.delay
 import kotlin.random.Random
 import kotlin.system.measureTimeMillis
 
@@ -10,6 +11,7 @@ class SimpleDoTest : Test() {
 
     override val packageName = "me.jamesfrost.simpledo"
     private var addedTasks = mutableListOf<String>()
+    private var allAddedTasks = mutableListOf<String>()
     init {
         appName = "SimpleDo"
     }
@@ -18,8 +20,7 @@ class SimpleDoTest : Test() {
     override suspend fun runTests() {
         super.runTests()
 
-        executeTest(::fullApplicationTest, 1000, "SimpleDo full application test")
-
+        executeTest(::fullApplicationTest, 1000, "SimpleDo full application test", false)
 
     }
 
@@ -34,7 +35,21 @@ class SimpleDoTest : Test() {
             "buy",
             "cook",
             "meet",
-            "learn"
+            "learn",
+            "organize",
+            "schedule",
+            "paint",
+            "repair",
+            "study",
+            "exercise",
+            "visit",
+            "assemble",
+            "discuss",
+            "read",
+            "review",
+            "update",
+            "design",
+            "implement"
         )
         val nouns = listOf(
             "report",
@@ -46,15 +61,57 @@ class SimpleDoTest : Test() {
             "milk",
             "dinner",
             "friend",
-            "language"
+            "language",
+            "presentation",
+            "server",
+            "project",
+            "office",
+            "inventory",
+            "furniture",
+            "bread",
+            "lunch",
+            "colleague",
+            "program",
+            "website",
+            "task",
+            "meeting",
+            "blueprint",
+            "module"
         )
-        val adverbs = listOf("today", "tomorrow", "this week", "at the weekend")
+        val adverbs = listOf(
+            "today",
+            "tomorrow",
+            "this week",
+            "at the weekend",
+            "immediately",
+            "later",
+            "soon",
+            "eventually",
+            "regularly",
+            "occasionally",
+            "frequently",
+            "rarely",
+            "weekly",
+            "monthly",
+            "yearly"
+        )
 
-        val verb = verbs.random()
-        val noun = nouns.random()
-        val adverb = adverbs.randomOrNull()
+        var verb = verbs.random()
+        var noun = nouns.random()
+        var adverb = adverbs.randomOrNull()
 
-        return "$verb $noun $adverb".trim()
+        var new_string = "$verb $noun $adverb".trim()
+
+        while (allAddedTasks.contains(new_string)) {
+            verb = verbs.random()
+            noun = nouns.random()
+            adverb = adverbs.randomOrNull()
+
+            new_string = "$verb $noun $adverb".trim()
+        }
+
+        allAddedTasks.add(new_string)
+        return new_string
     }
 
     private suspend fun addTodo(): Pair<Boolean, String> {
@@ -111,7 +168,6 @@ class SimpleDoTest : Test() {
             "Failed to remove todo: $todo"
         )
         if (!deletedTodo) return Pair(false, "Failed to remove todo: $todo")
-
         addedTasks.remove(todo)
         return Pair(true, "Successfully removed todo: $todo")
     }

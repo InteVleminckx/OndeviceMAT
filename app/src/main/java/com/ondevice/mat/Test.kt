@@ -22,6 +22,8 @@ open class Test {
 
     private val folderPath = createFolderIfNotExists()
     private var file: FileOutputStream? = null
+    private var globalFile: FileOutputStream? = null
+    private var totalExecutionTime: Double = 0.0
 
     open fun setup(automationEngine: Engine) {
         engine = automationEngine
@@ -30,6 +32,8 @@ open class Test {
     open suspend fun runTests() {
         Log.v(TAG, "Start running tests for package: $packageName")
         file = createFile()
+        globalFile = createGlobalFile()
+        totalExecutionTime = 0.0
     }
 
     private fun createFolderIfNotExists(): String {
@@ -42,6 +46,22 @@ open class Test {
         }
 
         return folderPath
+    }
+
+    fun createNewFile() {
+        file = createFile();
+    }
+
+    private fun createGlobalFile(): FileOutputStream? {
+        val filename = "overview-$appName.txt"
+
+        return try {
+            val file: File = File(folderPath, filename)
+            FileOutputStream(file, true)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
     }
 
     fun createFile(): FileOutputStream? {
@@ -60,6 +80,12 @@ open class Test {
 
     }
 
+    fun logToGlobalFile(message: String) {
+
+        globalFile?.write("${message}\n".toByteArray())
+
+    }
+
     fun logToFile(message: String) {
         val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
         val currentTimeStamp = dateFormat.format(Date())
@@ -71,7 +97,8 @@ open class Test {
     suspend fun executeTest(
         func: KSuspendFunction1<Int, Pair<Boolean, String>>,
         iterations: Int,
-        testName: String
+        testName: String,
+        countUpExecutions: Boolean
     ) {
         if (file == null) return
 
@@ -93,6 +120,12 @@ open class Test {
                 "Finished the test with $iterations in ${executionTime / 1000.0} seconds"
             )
             logToFile("Finished the test with $iterations iterations in ${executionTime / 1000.0} seconds")
+            if (!countUpExecutions) {
+                totalExecutionTime += (executionTime / 1000.0)
+                logToGlobalFile("Duration: $totalExecutionTime seconds")
+            } else {
+                totalExecutionTime += (executionTime / 1000.0)
+            }
         }
     }
 

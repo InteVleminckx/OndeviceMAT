@@ -178,7 +178,7 @@ class PermissionManager(
     }
 
     fun storageGranted(): Boolean {
-        return storageAccessGranted
+        return storageAccessGranted || checkExternalStoragePermission()
     }
 
     fun screenCaptureGranted(): Boolean {
@@ -190,11 +190,12 @@ class PermissionManager(
     }
 
     fun accessibilityServiceGranted(): Boolean {
-        return accessibilityGranted
+        return accessibilityGranted || isAccessibilityServiceEnabled()
     }
 
     fun allPermissionsGranted(): Boolean {
-        return storageAccessGranted && screenCaptureGranted && accessibilityGranted
+        return storageGranted() && screenCaptureGranted() && accessibilityServiceGranted()
+//        return storageGranted() && accessibilityServiceGranted()
     }
 
 

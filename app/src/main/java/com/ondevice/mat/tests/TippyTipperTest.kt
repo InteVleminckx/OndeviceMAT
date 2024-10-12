@@ -12,6 +12,7 @@ import kotlin.system.measureTimeMillis
 class TippyTipperTest : Test() {
 
     override val packageName = "net.mandaria.tippytipper"
+    var curScreen: Screen
 
     enum class ButtonsScreenOne {
         CALC, DEL, CLEAR, ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE
@@ -31,18 +32,18 @@ class TippyTipperTest : Test() {
 
     init {
         appName = "TippyTipper"
+        curScreen = Screen.ONE
     }
 
     override suspend fun runTests() {
         super.runTests()
 
-        executeTest(::fullApplicationTest, 1000, "TippyTipper")
+        executeTest(::fullApplicationTest, 1000, "TippyTipper", false)
 
     }
 
     private suspend fun fullApplicationTest(iterations: Int): Pair<Boolean, String> {
 
-        var curScreen = Screen.ONE
         var buttons = getButtons(curScreen)
         var nextScreen: Screen
         var target: Pair<String, searchTypes>?

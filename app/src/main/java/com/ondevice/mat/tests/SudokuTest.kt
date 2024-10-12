@@ -29,17 +29,17 @@ class SudokuTest : Test() {
         if (engine != null) {
             Log.v(OUTPUT_TAG, "--- Starting Automatic Sudoku Test ---")
             Log.v(OUTPUT_TAG, "--- Starting beginner difficulty ---")
-            executeTest(::beginnerDiffTest, 1, "Sudoku-Beginner-Difficulty")
+            executeTest(::beginnerDiffTest, 1, "Sudoku-Beginner-Difficulty", true)
 
             Log.v(OUTPUT_TAG, "--- Starting easy difficulty ---")
-            executeTest(::easyDiffTest, 1, "Sudoku-Easy-Difficulty")
+            executeTest(::easyDiffTest, 1, "Sudoku-Easy-Difficulty", true)
 
 
             Log.v(OUTPUT_TAG, "--- Starting medium difficulty ---")
-            executeTest(::mediumDiffTest, 1, "Sudoku-Medium-Difficulty")
+            executeTest(::mediumDiffTest, 1, "Sudoku-Medium-Difficulty", true)
 
             Log.v(OUTPUT_TAG, "--- Starting hard difficulty ---")
-            executeTest(::hardDiffTest, 0, "Sudoku-Hard-Difficulty")
+            executeTest(::hardDiffTest, 1, "Sudoku-Hard-Difficulty", false)
         }
     }
 

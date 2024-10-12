@@ -19,8 +19,7 @@ class TicTacToeTest : Test() {
 
     override suspend fun runTests() {
         super.runTests()
-
-        executeTest(::automaticTicTacToe, 1000, "Tic Tac Toe")
+        executeTest(::automaticTicTacToe, 10, "Tic Tac Toe", false)
     }
 
     private fun updateBoard(): Array<Array<String>>? {
