@@ -27,7 +27,7 @@ class PermissionManager(
     private var screenCaptureGranted: Boolean  = false
     private var accessibilityGranted: Boolean  = false
 
-    private var screenCaptureData: Intent? = null
+//    private var screenCaptureData: Intent? = null
 
     private val storageActivityResultLauncher =
         mainActivity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -45,7 +45,7 @@ class PermissionManager(
             if (it.resultCode == Activity.RESULT_OK) {
                 toast("Screen Capture Permission Granted!")
                 screenCaptureGranted = true
-                screenCaptureData = it.data
+//                screenCaptureData = it.data
             } else {
                 toast("Screen Capture Permission Denied!")
                 screenCaptureGranted = false
@@ -150,6 +150,10 @@ class PermissionManager(
             Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
         )
 
+        if (enabledServicesSetting === null) {
+            return false
+        }
+
         // Handle empty setting case, this means there are no accessibility services active
         if (enabledServicesSetting.isEmpty()) {
             return false
@@ -185,16 +189,16 @@ class PermissionManager(
         return screenCaptureGranted
     }
 
-    fun getScreenCaptureData(): Intent? {
-        return screenCaptureData
-    }
+//    fun getScreenCaptureData(): Intent? {
+//        return screenCaptureData
+//    }
 
     fun accessibilityServiceGranted(): Boolean {
-        return accessibilityGranted || isAccessibilityServiceEnabled()
+        return accessibilityGranted
     }
 
     fun allPermissionsGranted(): Boolean {
-        return storageGranted() && screenCaptureGranted() && accessibilityServiceGranted()
+        return storageGranted() && accessibilityServiceGranted() && screenCaptureGranted()
 //        return storageGranted() && accessibilityServiceGranted()
     }
 

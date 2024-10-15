@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
 
     private val permissionManager = PermissionManager(this)
-    private val screenRecorderConnection = ScreenRecorderConnection()
+//    private val screenRecorderConnection = ScreenRecorderConnection()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,10 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         // If we press on an application, start the recorder and set some settings
         appList.onItemClickListener = AdapterView.OnItemClickListener { _, _, _, id ->
-            startRecording()
+//            startRecording()
             Automator.targetApk = adapter.getItem(id.toInt()).packageName
             Automator.permissionsChecked = permissionManager.allPermissionsGranted()
-            Automator.screenRecorderConnection = screenRecorderConnection
+//            Automator.screenRecorderConnection = screenRecorderConnection
         }
     }
 
@@ -54,35 +54,35 @@ class MainActivity : AppCompatActivity() {
         super.onDestroy()
 
         // Unbind the service when the activity is destroyed
-        stopRecording()
+//        stopRecording()
     }
 
 
-    private fun startRecording() {
-        // First check if all permission are granted before we start the recorder
-        if (permissionManager.allPermissionsGranted()) {
+//    private fun startRecording() {
+//        // First check if all permission are granted before we start the recorder
+//        if (permissionManager.allPermissionsGranted()) {
+//
+//            // Bind the screen recorder service to the application
+//            val intent = Intent(this, ScreenRecorderService::class.java)
+//            intent.action = ScreenRecorderService.Actions.START.toString()
+//            intent.putExtra(ScreenRecorderService.Constants.DATA.toString(), permissionManager.getScreenCaptureData())
+//            startService(intent)
+//            bindService(intent, screenRecorderConnection.getConnection(), Context.BIND_AUTO_CREATE)
+//        }
+//    }
 
-            // Bind the screen recorder service to the application
-            val intent = Intent(this, ScreenRecorderService::class.java)
-            intent.action = ScreenRecorderService.Actions.START.toString()
-            intent.putExtra(ScreenRecorderService.Constants.DATA.toString(), permissionManager.getScreenCaptureData())
-            startService(intent)
-            bindService(intent, screenRecorderConnection.getConnection(), Context.BIND_AUTO_CREATE)
-        }
-    }
-
-    private fun stopRecording() {
-
-        // We want to stop the recorder, first check if the recorder is active.
-        // If that is the case, unbind the screen recorder from the application
-        if (screenRecorderConnection.isActive()) {
-            unbindService(screenRecorderConnection.getConnection())
-        }
-        Intent(applicationContext, ScreenRecorderService::class.java).also {
-            it.action = ScreenRecorderService.Actions.STOP.toString()
-            startService(it)
-        }
-    }
+//    private fun stopRecording() {
+//
+//        // We want to stop the recorder, first check if the recorder is active.
+//        // If that is the case, unbind the screen recorder from the application
+//        if (screenRecorderConnection.isActive()) {
+//            unbindService(screenRecorderConnection.getConnection())
+//        }
+//        Intent(applicationContext, ScreenRecorderService::class.java).also {
+//            it.action = ScreenRecorderService.Actions.STOP.toString()
+//            startService(it)
+//        }
+//    }
 
 
 }
