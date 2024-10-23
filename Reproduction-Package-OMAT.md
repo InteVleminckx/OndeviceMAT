@@ -33,3 +33,7 @@ This package provides all necessary steps to reproduce the results of the paper 
 5) A list of all installed applications will appear (installed in the previous step "installing the evaluated applications"). Select one of these applications to begin testing. After 10 seconds, the test will automatically start.
 6) Once the test is complete, the logs will be saved in the TestLogs folder located in the Documents directory of the device (Files application).
 7) Note: To start a new test, first close the O-MAT application and disable the accessibility service (can be found under settings > accessibility). Then repeat the process from step 1 in this section.
+
+# Running the Test Cases for emulator and the Server-client model
+1) To execute these test cases, you will need an additional repository: https://github.com/InteVleminckx/OffDeviceTesting
+2) The repository contains a README file with detailed instructions on how to run and add test cases.
