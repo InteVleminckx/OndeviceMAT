@@ -58,5 +58,21 @@ class Parser(private val service: MATAccessibilityService) {
         return allNodes
     }
 
+    fun findObjectByClassName(className: String): List<NodeInfo> {
+
+        val nodes: MutableList<NodeInfo> = mutableListOf();
+
+        for (node in getAllNodes()) {
+           if (node.nodeClass() == className) {
+               nodes.add(node)
+           }
+        }
+
+        return nodes;
+
+    }
+
+
+
 }
 

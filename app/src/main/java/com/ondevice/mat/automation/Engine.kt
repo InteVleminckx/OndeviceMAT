@@ -62,6 +62,11 @@ class Engine(private val service: MATAccessibilityService) {
         return parser.getAllNodes()
     }
 
+    fun findObjectByClassName(className: String): List<NodeInfo> {
+       parser.parseCurrentWindow();
+       return parser.findObjectByClassName(className);
+    }
+
     fun retrieveNode(searchTerm: String, searchType: searchTypes, allNodes: Boolean = false): NodeInfo? {
         // First retrieve the content from the window
         val windowContent: List<NodeInfo> = if (!allNodes) { retrieveWindowContent() } else { getAllNodes() }
