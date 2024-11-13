@@ -2,6 +2,8 @@ package com.ondevice.mat.automation
 
 import com.ondevice.mat.Test
 import com.ondevice.mat.tests.*
+import com.ondevice.offdevicetesting.CalendarTest
+import com.ondevice.offdevicetesting.ExpenseTrackerTest
 
 /**
  * Contains all the tests cases licked to there packagename.
@@ -13,7 +15,9 @@ class Explorer {
         TicTacToeTest().packageName to TicTacToeTest(),
         SimpleDoTest().packageName to SimpleDoTest(),
         SudokuTest().packageName to SudokuTest(),
-        TippyTipperTest().packageName to TippyTipperTest()
+        TippyTipperTest().packageName to TippyTipperTest(),
+        CalendarTest().packageName to CalendarTest(),
+        ExpenseTrackerTest().packageName to ExpenseTrackerTest()
     )
 
     fun targetTestClass(targetApk: String): Test? {
