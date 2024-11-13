@@ -23,7 +23,7 @@ class Engine(private val service: MATAccessibilityService) {
     private val checkDelay: Long = 50
 
     enum class searchTypes {
-        TEXT, RESOURCE_ID
+        TEXT, RESOURCE_ID, CONTENT_DESC
     }
 
     suspend fun setup(apk: String) {
@@ -71,10 +71,12 @@ class Engine(private val service: MATAccessibilityService) {
         // First retrieve the content from the window
         val windowContent: List<NodeInfo> = if (!allNodes) { retrieveWindowContent() } else { getAllNodes() }
             // Searches the component on the current window based on a particular search type and term
+
         return windowContent.firstOrNull { node ->
             when (searchType) {
                 searchTypes.TEXT -> node.nodeText().contains(searchTerm)
                 searchTypes.RESOURCE_ID -> node.nodeResourceId().contains(searchTerm)
+                searchTypes.CONTENT_DESC -> node.nodeContentDescription().contains(searchTerm)
             }
         }
     }
@@ -160,10 +162,14 @@ class Engine(private val service: MATAccessibilityService) {
         coordinates: Boolean = false
     ): Boolean {
 
+        var cur_node = node
         // First check if the node is even clickable
-        if (!node.nodeIsClickable()) {
-            Log.v("DebugTag", "Node isn't clickable")
-            return false
+        if (!cur_node.nodeIsClickable()) {
+            if (!cur_node.getParent()?.nodeIsClickable()!!) {
+                Log.v("DebugTag", "Node isn't clickable")
+                return false
+            }
+            cur_node = node.getParent()!!
         }
 
         // Notify listener that some interaction will occur
@@ -171,10 +177,10 @@ class Engine(private val service: MATAccessibilityService) {
 
         // Perform interaction
         if (coordinates) {
-            interactor.clickCoordinates(node)
+            interactor.clickCoordinates(cur_node)
         }
         else {
-            interactor.click(node)
+            interactor.click(cur_node)
         }
 
         // Check if interaction found place using the listener
@@ -194,7 +200,7 @@ class Engine(private val service: MATAccessibilityService) {
         eventListener.resetExpected()
 
         // Check if the current window contains the target
-        isInteractionSucceeded = retrieveNode(target.first, target.second) != null
+        isInteractionSucceeded = retrieveNode(target.first, target.second, allNodes = true) != null
         Log.v("DebugTag", "Window contains target: $isInteractionSucceeded")
 
         delay(100)

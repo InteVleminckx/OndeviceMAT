@@ -25,10 +25,10 @@ class ExpenseTrackerTest : Test() {
         logToFile("Clicking 'Add Expense' button")
 
         val addExpenseButtonResourceId = "small floating action button"
-        val addExpenseButton = engine?.retrieveNode(addExpenseButtonResourceId, Engine.searchTypes.RESOURCE_ID)
+        val addExpenseButton = engine?.retrieveNode(addExpenseButtonResourceId, Engine.searchTypes.CONTENT_DESC, allNodes = true)
             ?: return Pair(false, "Failed to retrieve 'Add Expense' button with resource ID: $addExpenseButtonResourceId")
 
-        val target = Pair("Add Expense View", Engine.searchTypes.RESOURCE_ID)
+        val target = Pair("Add Expense", Engine.searchTypes.CONTENT_DESC)
         val clickedAddExpenseButton = engine?.click(addExpenseButton, target) == true
         if (!clickedAddExpenseButton) {
             logToFile("Failed to click 'Add Expense' button")
