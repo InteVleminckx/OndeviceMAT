@@ -164,7 +164,7 @@ class Engine(private val service: MATAccessibilityService) {
 
         var cur_node = node
         // First check if the node is even clickable
-        if (!cur_node.nodeIsClickable()) {
+        if (!cur_node.nodeIsClickable() && !node.nodeIsCheckable()) {
             if (!cur_node.getParent()?.nodeIsClickable()!!) {
                 Log.v("DebugTag", "Node isn't clickable")
                 return false
@@ -176,7 +176,7 @@ class Engine(private val service: MATAccessibilityService) {
         eventListener.setExpectedEvent(EventFilter.events.CLICK)
 
         // Perform interaction
-        if (coordinates) {
+        if (coordinates || node.nodeIsCheckable()) {
             interactor.clickCoordinates(cur_node)
         }
         else {
