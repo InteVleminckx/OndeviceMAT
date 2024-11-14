@@ -182,7 +182,7 @@ class CalendarTest : Test() {
             node?.let {
                 engine?.click(
                     it,
-                    Pair("Settings clicked", Engine.searchTypes.RESOURCE_ID)
+                    Pair("Set dark theme", Engine.searchTypes.TEXT)
                 )
             } ?: false
         } catch (e: Exception) {
@@ -208,11 +208,12 @@ class CalendarTest : Test() {
         "Failed to retrieve node with resource"
         )
 
-        val pressedDark = engine?.click(dark, Pair("Dark theme button clicked", Engine.searchTypes.RESOURCE_ID))
+        val pressedDark = engine?.click(dark, Pair("Set dark theme", Engine.searchTypes.TEXT))
                 ?: return Pair(
                     false,
                     "Failed to retrieve node with resource"
                 )
+
         if (!pressedDark) {
             return Pair(false, "Couldn't click object with resource")
         }
