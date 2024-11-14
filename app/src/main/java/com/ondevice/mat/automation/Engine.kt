@@ -138,7 +138,7 @@ class Engine(private val service: MATAccessibilityService) {
     private suspend fun checkTextBoxContent(requiredText: String, node: NodeInfo): Boolean {
         return try {
             withTimeout(timeoutTime) {
-                while (node.nodeText() != requiredText) {
+                while (!node.nodeText().contains(requiredText)) {
                     delay(checkDelay)
                 }
             }
