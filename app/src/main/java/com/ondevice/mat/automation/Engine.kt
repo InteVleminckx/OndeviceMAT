@@ -135,11 +135,19 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
-    private suspend fun checkTextBoxContent(requiredText: String, node: NodeInfo): Boolean {
+    private suspend fun checkTextBoxContent(requiredText: String, searchTerm: String, searchType: searchTypes): Boolean {
         return try {
             withTimeout(timeoutTime) {
-                while (!node.nodeText().contains(requiredText)) {
-                    delay(checkDelay)
+                while (true) {
+                    val node = retrieveNode(searchTerm, searchType)
+                    if (node == null) {
+                        delay(checkDelay)
+                        continue
+                    } else if (!node.nodeText().contains(requiredText)) {
+                        delay(checkDelay)
+                    } else {
+                        break
+                    }
                 }
             }
             true
@@ -342,11 +350,8 @@ class Engine(private val service: MATAccessibilityService) {
 
     suspend fun fillTextBox(node: NodeInfo, text: String, searchTerm: String, searchType: searchTypes): Boolean {
         interactor.setText(node, text)
-        val editedNode = retrieveNode(searchTerm, searchType) ?: return false
-        val result = checkTextBoxContent(text, editedNode)
-
+        val result = checkTextBoxContent(text, searchTerm, searchType)
         delay(100)
-
         return result
     }
 }

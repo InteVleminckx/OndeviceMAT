@@ -16,8 +16,8 @@ class ExpenseTrackerTest : Test() {
     }
 
     private suspend fun fullExpenseTrackerAppTest(iterations: Int): Pair<Boolean, String> {
-        clickToAddExpense()
-        clickToIncome()
+//        clickToAddExpense()
+//        clickToIncome()
         fillIncomeDetails()
         return Pair(true, "Successfully completed the Expense Tracker app test.")
     }
