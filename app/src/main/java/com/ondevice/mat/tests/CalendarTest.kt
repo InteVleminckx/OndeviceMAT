@@ -191,17 +191,6 @@ class CalendarTest : Test() {
         }
     }
 
-    private suspend fun changeTheme(): Boolean {
-        val dark = engine?.findObjectByClassName("android.widget.LinearLayout")?.get(10)
-            ?: return false
-        val darkClicked = engine?.click(dark, Pair("dark button", Engine.searchTypes.RESOURCE_ID))
-            ?: return false
-        if (!darkClicked) {
-            return false
-        }
-        return true
-    }
-
     private suspend fun changeThemeToDark(): Pair<Boolean, String>  {
         val dark = engine?.findObjectByClassName("android.widget.LinearLayout")?.get(10) ?: return Pair(
         false,
