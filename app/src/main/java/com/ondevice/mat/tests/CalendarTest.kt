@@ -28,7 +28,8 @@ class CalendarTest : Test() {
             if (!saveNote()) return Pair(false, "Failed to save note.")
             if (!deleteNote()) return Pair(false, "Failed to delete note.")
             if (!goToSettings()) return Pair(false, "Failed to navigate to settings.")
-            toggleNotifications()
+           changeThemeToDark()
+
         }
         return Pair(true, "Successfully completed the Calendar app test.")
     }
@@ -190,31 +191,36 @@ class CalendarTest : Test() {
         }
     }
 
+    private suspend fun changeTheme(): Boolean {
+        val dark = engine?.findObjectByClassName("android.widget.LinearLayout")?.get(10)
+            ?: return false
+        val darkClicked = engine?.click(dark, Pair("dark button", Engine.searchTypes.RESOURCE_ID))
+            ?: return false
+        if (!darkClicked) {
+            return false
+        }
+        return true
+    }
 
-    private suspend fun toggleNotifications(): Pair<Boolean, String> {
-        logToFile("Starting to toggle notifications on/off")
+    private suspend fun changeThemeToDark(): Pair<Boolean, String>  {
+        val dark = engine?.findObjectByClassName("android.widget.LinearLayout")?.get(10) ?: return Pair(
+        false,
+        "Failed to retrieve node with resource"
+        )
 
-        // Resource ID for the switch widget
-        val switchResourceId = "switchWidget"
-
-        // Attempt to retrieve the switch element by resource ID
-        val switchNode = engine?.retrieveNode(switchResourceId, Engine.searchTypes.RESOURCE_ID)
-            ?: return Pair(false, "Failed to retrieve switch with resource ID: $switchResourceId")
-
-        // Attempt to toggle the switch by clicking on it
-        val switchClicked = engine?.click(
-            switchNode,
-            Pair(switchResourceId, Engine.searchTypes.RESOURCE_ID)
-        ) == true
-        if (!switchClicked) {
-            logToFile("Failed to click the switch for notifications")
-            return Pair(false, "Couldn't click the switch with resource ID: $switchResourceId")
+        val pressedDark = engine?.click(dark, Pair("Dark theme button clicked", Engine.searchTypes.RESOURCE_ID))
+                ?: return Pair(
+                    false,
+                    "Failed to retrieve node with resource"
+                )
+        if (!pressedDark) {
+            return Pair(false, "Couldn't click object with resource")
         }
 
-        delay(500) // Brief delay to allow the UI to reflect the toggle state
-
-        logToFile("Successfully toggled notifications")
-        return Pair(true, "Notifications toggled successfully")
+        return Pair(
+            true,
+            "Failed to retrieve node with resource"
+        )
     }
 }
 
