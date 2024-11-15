@@ -3,6 +3,7 @@ package com.ondevice.mat.automation
 import com.ondevice.mat.Test
 import com.ondevice.mat.tests.*
 import com.ondevice.offdevicetesting.CalendarTest
+import com.ondevice.offdevicetesting.DictionaryTest
 import com.ondevice.offdevicetesting.ExpenseTrackerTest
 
 /**
@@ -17,7 +18,8 @@ class Explorer {
         SudokuTest().packageName to SudokuTest(),
         TippyTipperTest().packageName to TippyTipperTest(),
         CalendarTest().packageName to CalendarTest(),
-        ExpenseTrackerTest().packageName to ExpenseTrackerTest()
+        ExpenseTrackerTest().packageName to ExpenseTrackerTest(),
+        DictionaryTest().packageName to DictionaryTest()
     )
 
     fun targetTestClass(targetApk: String): Test? {
