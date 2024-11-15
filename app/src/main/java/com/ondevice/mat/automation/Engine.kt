@@ -67,14 +67,16 @@ class Engine(private val service: MATAccessibilityService) {
        return parser.findObjectByClassName(className);
     }
 
-    fun retrieveNode(searchTerm: String, searchType: searchTypes, allNodes: Boolean = false): NodeInfo? {
+    fun retrieveNode(searchTerm: String, searchType: searchTypes, allNodes: Boolean = false, classRestriction: String = ""): NodeInfo? {
         // First retrieve the content from the window
         val windowContent: List<NodeInfo> = if (!allNodes) { retrieveWindowContent() } else { getAllNodes() }
             // Searches the component on the current window based on a particular search type and term
 
+        val test = windowContent.map { it.nodeClass() }
+
         return windowContent.firstOrNull { node ->
             when (searchType) {
-                searchTypes.TEXT -> node.nodeText().contains(searchTerm)
+                searchTypes.TEXT -> node.nodeText().contains(searchTerm) && (classRestriction.isEmpty() || classRestriction == node.nodeClass())
                 searchTypes.RESOURCE_ID -> node.nodeResourceId().contains(searchTerm)
                 searchTypes.CONTENT_DESC -> node.nodeContentDescription().contains(searchTerm)
             }
@@ -139,7 +141,7 @@ class Engine(private val service: MATAccessibilityService) {
         return try {
             withTimeout(timeoutTime) {
                 while (true) {
-                    val node = retrieveNode(searchTerm, searchType)
+                    val node = retrieveNode(searchTerm, searchType, allNodes = true, classRestriction = "android.widget.EditText")
                     if (node == null) {
                         delay(checkDelay)
                         continue
