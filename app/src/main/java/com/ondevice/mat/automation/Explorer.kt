@@ -5,6 +5,7 @@ import com.ondevice.mat.tests.*
 import com.ondevice.offdevicetesting.CalendarTest
 import com.ondevice.offdevicetesting.DictionaryTest
 import com.ondevice.offdevicetesting.ExpenseTrackerTest
+import com.ondevice.offdevicetesting.NewsTest
 
 /**
  * Contains all the tests cases licked to there packagename.
@@ -19,7 +20,9 @@ class Explorer {
         TippyTipperTest().packageName to TippyTipperTest(),
         CalendarTest().packageName to CalendarTest(),
         ExpenseTrackerTest().packageName to ExpenseTrackerTest(),
-        DictionaryTest().packageName to DictionaryTest()
+        DictionaryTest().packageName to DictionaryTest(),
+        NewsTest().packageName to NewsTest(),
+        FriendzoneTest().packageName to FriendzoneTest()
     )
 
     fun targetTestClass(targetApk: String): Test? {
