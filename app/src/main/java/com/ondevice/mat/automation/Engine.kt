@@ -62,21 +62,63 @@ class Engine(private val service: MATAccessibilityService) {
         return parser.getAllNodes()
     }
 
-    fun findObjectByClassName(className: String): List<NodeInfo> {
-       parser.parseCurrentWindow();
-       return parser.findObjectByClassName(className);
+    private fun containsChildWithSpecificText(parent: NodeInfo, text: String): Boolean {
+        for (i in 0 ..< parent.childCount()) {
+            val child = parent.getChild(i)
+            if (child != null) {
+                if (child.nodeText().contains(text) && child.nodeClass() == "android.widget.TextView") {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
-    fun retrieveNode(searchTerm: String, searchType: searchTypes, allNodes: Boolean = false, classRestriction: String = ""): NodeInfo? {
+    fun findObjectByClassName(className: String): List<NodeInfo> {
+        parser.parseCurrentWindow();
+        return parser.findObjectByClassName(className);
+    }
+
+    suspend fun findObjectByClassNameAndChildText(className: String, text: String): NodeInfo? {
+
+        return try {
+            var node: NodeInfo? = null
+            withTimeout(timeoutTime) {
+                while (node == null) {
+                    for (n in findObjectByClassName(className)) {
+                        if (containsChildWithSpecificText(n, text)) {
+                           node = n
+                        }
+                    }
+                    delay(checkDelay)
+                }
+            }
+            node
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun retrieveNode(
+        searchTerm: String,
+        searchType: searchTypes,
+        allNodes: Boolean = false,
+        classRestriction: String = ""
+    ): NodeInfo? {
+
         // First retrieve the content from the window
-        val windowContent: List<NodeInfo> = if (!allNodes) { retrieveWindowContent() } else { getAllNodes() }
-            // Searches the component on the current window based on a particular search type and term
+        val windowContent: List<NodeInfo> = if (!allNodes) {
+            retrieveWindowContent()
+        } else {
+            getAllNodes()
+        }
 
-        val test = windowContent.map { it.nodeClass() }
-
+        // Searches the component on the current window based on a particular search type and term
         return windowContent.firstOrNull { node ->
             when (searchType) {
-                searchTypes.TEXT -> node.nodeText().contains(searchTerm) && (classRestriction.isEmpty() || classRestriction == node.nodeClass())
+                searchTypes.TEXT -> node.nodeText()
+                    .contains(searchTerm) && (classRestriction.isEmpty() || classRestriction == node.nodeClass())
+
                 searchTypes.RESOURCE_ID -> node.nodeResourceId().contains(searchTerm)
                 searchTypes.CONTENT_DESC -> node.nodeContentDescription().contains(searchTerm)
             }
@@ -123,10 +165,13 @@ class Engine(private val service: MATAccessibilityService) {
      * Keeps checking if the target node is visible on the screen.
      * If it keeps changing for longer than the timeout time, we say that the target node isn't on the screen
      */
-    private suspend fun checkTargetNodeVisible(searchTerm: String, searchType: searchTypes): Boolean {
+    private suspend fun checkTargetNodeVisible(
+        searchTerm: String,
+        searchType: searchTypes
+    ): Boolean {
         return try {
             withTimeout(timeoutTime) {
-                while (retrieveNode(searchTerm, searchType) == null) {
+                while (retrieveNode(searchTerm, searchType, allNodes = true) == null) {
                     delay(checkDelay)
                 }
             }
@@ -137,11 +182,20 @@ class Engine(private val service: MATAccessibilityService) {
         }
     }
 
-    private suspend fun checkTextBoxContent(requiredText: String, searchTerm: String, searchType: searchTypes): Boolean {
+    private suspend fun checkTextBoxContent(
+        requiredText: String,
+        searchTerm: String,
+        searchType: searchTypes
+    ): Boolean {
         return try {
             withTimeout(timeoutTime) {
                 while (true) {
-                    val node = retrieveNode(searchTerm, searchType, allNodes = true, classRestriction = "android.widget.EditText")
+                    val node = retrieveNode(
+                        searchTerm,
+                        searchType,
+                        allNodes = true,
+                        classRestriction = "android.widget.EditText"
+                    )
                     if (node == null) {
                         delay(checkDelay)
                         continue
@@ -188,8 +242,7 @@ class Engine(private val service: MATAccessibilityService) {
         // Perform interaction
         if (coordinates || node.nodeIsCheckable()) {
             interactor.clickCoordinates(cur_node)
-        }
-        else {
+        } else {
             interactor.click(cur_node)
         }
 
@@ -210,7 +263,7 @@ class Engine(private val service: MATAccessibilityService) {
         eventListener.resetExpected()
 
         // Check if the current window contains the target
-        isInteractionSucceeded = retrieveNode(target.first, target.second, allNodes = true) != null
+        isInteractionSucceeded = checkTargetNodeVisible(target.first, target.second)
         Log.v("DebugTag", "Window contains target: $isInteractionSucceeded")
 
         delay(100)
@@ -239,8 +292,7 @@ class Engine(private val service: MATAccessibilityService) {
         // Perform interaction
         if (coordinates) {
             interactor.clickCoordinates(node)
-        }
-        else {
+        } else {
             interactor.click(node)
         }
 
@@ -270,7 +322,10 @@ class Engine(private val service: MATAccessibilityService) {
         return isInteractionSucceeded
     }
 
-    suspend fun swipe(direction: Interactor.SwipeDirection, target: Pair<String, searchTypes>? = null): Boolean {
+    suspend fun swipe(
+        direction: Interactor.SwipeDirection,
+        target: Pair<String, searchTypes>? = null
+    ): Boolean {
 
         interactor.swipe(direction)
 
@@ -350,7 +405,12 @@ class Engine(private val service: MATAccessibilityService) {
     }
 
 
-    suspend fun fillTextBox(node: NodeInfo, text: String, searchTerm: String, searchType: searchTypes): Boolean {
+    suspend fun fillTextBox(
+        node: NodeInfo,
+        text: String,
+        searchTerm: String,
+        searchType: searchTypes
+    ): Boolean {
         interactor.setText(node, text)
         val result = checkTextBoxContent(text, searchTerm, searchType)
         delay(100)

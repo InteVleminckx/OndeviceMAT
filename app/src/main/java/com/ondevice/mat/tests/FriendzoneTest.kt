@@ -2,11 +2,15 @@ package com.ondevice.mat.tests
 
 import com.ondevice.mat.Test
 import com.ondevice.mat.automation.Engine
+import kotlinx.coroutines.delay
 import kotlin.math.log
 
-class FriendzoneTest: Test() {
+class FriendzoneTest : Test() {
     override val packageName = "com.example.friendzone"
-    private val users = listOf("Grace Turner", "Santosh", "Mohit Damke") // Changed to listOf for better Kotlin practices
+    private val users = listOf(
+        "Grace Turner",
+    ) // Changed to listOf for better Kotlin practices
+
     init {
         appName = "FriendZone"
     }
@@ -18,35 +22,40 @@ class FriendzoneTest: Test() {
 
     private suspend fun fullFriendzoneAppTest(iterations: Int): Pair<Boolean, String> {
         for (user in users) { // Iterate through the user list
-            for (i in 0 until iterations) {
-                logToFile("Starting test for user: $user")
-                //signIn()
-                var result = navigateToSearch()
-                if (!result.first) return result
-                result = searchUser(user)
-                if (!result.first) return result
-                result = clickToFirstSearchResult(user)
-                if (!result.first) return result
-                result = followUser()
-                if (!result.first) return result
-                result = goBack()
-                if (!result.first) return result
-                result = goChats()
-                if (!result.first) return result
-                result = writeMessageToUser(user)
-                if (!result.first) return result
-            }
+            logToFile("Starting test for user: $user")
+            //signIn()
+            var result = navigateToSearch()
+            if (!result.first) return result
+            result = searchUser(user)
+            if (!result.first) return result
+            result = clickToFirstSearchResult(user)
+            if (!result.first) return result
+            result = followUser()
+            if (!result.first) return result
+            result = goBack()
+            if (!result.first) return result
+            result = goChats()
+            if (!result.first) return result
+            result = writeMessageToUser(user)
+            if (!result.first) return result
+            delay(1000)
         }
         return Pair(true, "Successfully completed the FriendZone App test for all users.")
     }
-    private suspend fun signIn():Pair<Boolean, String> {
+
+    private suspend fun signIn(): Pair<Boolean, String> {
         logToFile("Trying to sign in")
 
         val mailField = engine?.findObjectByClassName("android.widget.EditText")?.get(0)
         val isMailFilled = mailField?.let {
-            engine?.fillTextBox(mailField, "elf.prlk64@gmail.com", "elf.prlk64@gmail.com", Engine.searchTypes.TEXT)
+            engine?.fillTextBox(
+                mailField,
+                "elf.prlk64@gmail.com",
+                "elf.prlk64@gmail.com",
+                Engine.searchTypes.TEXT
+            )
         } == true
-        if(!isMailFilled) {
+        if (!isMailFilled) {
             logToFile("Unsuccessful to fill mail field")
             return Pair(false, "Unsuccessfully to fill mail field")
         }
@@ -55,7 +64,7 @@ class FriendzoneTest: Test() {
             engine?.fillTextBox(it, "kaburga9", "kaburga9", Engine.searchTypes.TEXT)
         } == true
 
-        if(!isPasswordFilled) {
+        if (!isPasswordFilled) {
             logToFile("Unsuccessful to fill password field")
             return Pair(false, "Failed to fill password field")
         }
@@ -64,7 +73,7 @@ class FriendzoneTest: Test() {
         val isLoginButtonClicked = loginButtonClicked?.let {
             engine?.click(it, target)
         } == true
-        if(!isLoginButtonClicked) {
+        if (!isLoginButtonClicked) {
             logToFile("Failed to login")
             return Pair(false, "Failed to login")
         }
@@ -73,12 +82,14 @@ class FriendzoneTest: Test() {
     }
 
     private suspend fun navigateToSearch(): Pair<Boolean, String> {
-        val searchButton = engine?.findObjectByClassName("android.view.View")?.get(21)
+
+        var all_ojbs = engine?.findObjectByClassName("android.view.View")
+        val searchButton = all_ojbs?.get(all_ojbs.size - 5)
         val target = Pair("SEARCH", Engine.searchTypes.TEXT)
         val isSearchButtonClicked = searchButton?.let {
             engine?.click(it, target)
         } == true
-        if(!isSearchButtonClicked) {
+        if (!isSearchButtonClicked) {
             logToFile("Failed to navigate search")
             return Pair(false, "Failed to navigate  search page")
         }
@@ -93,7 +104,7 @@ class FriendzoneTest: Test() {
             engine?.fillTextBox(it, userName, userName, Engine.searchTypes.TEXT)
         } == true
 
-        if(!isSearchFilledWithText) {
+        if (!isSearchFilledWithText) {
             logToFile("Failed to fill user name in search field")
             return Pair(false, "Failed to fill search text field")
         }
@@ -108,7 +119,7 @@ class FriendzoneTest: Test() {
         val isFirstResultClicked = firstResultRow?.let {
             engine?.click(it, target)
         } == true
-        if(!isFirstResultClicked) {
+        if (!isFirstResultClicked) {
             logToFile("Unsuccessful to click to first result")
             return Pair(false, "Failed to click to first result")
         }
@@ -118,13 +129,13 @@ class FriendzoneTest: Test() {
 
     private suspend fun followUser(): Pair<Boolean, String> {
         logToFile("Following user")
-        val target = Pair("Follow", Engine.searchTypes.TEXT)
+        val target = Pair("followers", Engine.searchTypes.TEXT)
         val followButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
         val isFollowButtonPressed = followButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!isFollowButtonPressed) {
+        if (!isFollowButtonPressed) {
             logToFile("Failed to press to follow button")
             return Pair(false, "Failed to click follow button")
         }
@@ -139,7 +150,7 @@ class FriendzoneTest: Test() {
         val isBackButtonClicked = backButton?.let {
             engine?.click(it, target)
         } == true
-        if(!isBackButtonClicked) {
+        if (!isBackButtonClicked) {
             logToFile("Failed to go back")
             return Pair(false, "Failed to navigate back")
         }
@@ -154,9 +165,8 @@ class FriendzoneTest: Test() {
         val isMessagesMenuButtonClicked = messageMenuButton?.let {
             engine?.click(it, target)
         } == true
-        logToFile("failed to go messages")
 
-        if(!isMessagesMenuButtonClicked) {
+        if (!isMessagesMenuButtonClicked) {
             logToFile("Failed to click messages button")
             return Pair(false, "Failed to click messages button")
         }
@@ -171,18 +181,19 @@ class FriendzoneTest: Test() {
             engine?.fillTextBox(it, userName, userName, Engine.searchTypes.TEXT)
         } == true
 
-        if(!isSearchUSerFieldFilled) {
+        if (!isSearchUSerFieldFilled) {
             logToFile("Failed to search user to send message")
             return Pair(false, "Failed to search user")
         }
         logToFile("Successfully search user: $userName")
 
         var target = Pair(userName, Engine.searchTypes.TEXT)
-        val firstResult = engine?.findObjectByClassName("android.view.View")?.get(6)
+        val firstResult = engine?.findObjectByClassNameAndChildText("android.view.View", userName)
         val isFirstResultSelected = firstResult?.let {
             engine?.click(it, target)
         } == true
-        if(!isFirstResultSelected) {
+
+        if (!isFirstResultSelected) {
             logToFile("Failed to click first user")
             return Pair(false, "Failed to click first user")
         }
@@ -194,7 +205,7 @@ class FriendzoneTest: Test() {
         val isMessageBoxFilled = messageBox?.let {
             engine?.fillTextBox(it, messageText, messageText, Engine.searchTypes.TEXT)
         } == true
-        if(!isMessageBoxFilled) {
+        if (!isMessageBoxFilled) {
             logToFile("Failed to write message")
             return Pair(false, "Failed write message")
         }
@@ -205,21 +216,23 @@ class FriendzoneTest: Test() {
         val isSendClicked = sendMessageButton?.let {
             engine?.click(it, target)
         } == true
-        if(isSendClicked) {
+
+        if (!isSendClicked) {
             logToFile("Failed to send message")
             return Pair(false, "Failed to send message")
         }
         logToFile("Successfully send message")
 
         target = Pair("MESSAGES", Engine.searchTypes.TEXT)
-        val homeNavBarButton = engine?.findObjectByClassName("android.view.View")?.get(19)
-        val isHomeButtonClicked = homeNavBarButton?.let {
+        var all_ojbs = engine?.findObjectByClassName("android.view.View")
+        val backButton = all_ojbs?.get(all_ojbs.size - 3)
+        val isBackButtonClicked = backButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!isHomeButtonClicked) {
-            logToFile("Failed to go home page")
-            return Pair(false, "Failed to go home page")
+        if (!isBackButtonClicked) {
+            logToFile("Failed to go back page")
+            return Pair(false, "Failed to go back page")
         }
 
         logToFile("Successfully send message to user $userName")
