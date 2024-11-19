@@ -3,6 +3,7 @@ package com.ondevice.offdevicetesting
 import com.ondevice.mat.Test
 import com.ondevice.mat.automation.Engine
 import kotlinx.coroutines.delay
+import kotlin.math.log
 
 class ExpenseTrackerTest : Test() {
 
@@ -17,23 +18,24 @@ class ExpenseTrackerTest : Test() {
     }
 
     private suspend fun fullExpenseTrackerAppTest(iterations: Int): Pair<Boolean, String> {
-        clickToAddExpense()
+
         clickToIncome()
-        fillIncomeDetails("5000", 4)
+        fillIncomeDetails("5000", 8)
+        Thread.sleep(1000)
 
-        clickToAddExpense()
         clickToIncome()
-        fillIncomeDetails("5000", 4)
+        fillIncomeDetails("5000", 3)
+        Thread.sleep(1000)
 
-        clickToAddExpense()
         clickToAddCost()
-        fillCostDetails("5", 7)
+        fillCostDetails("5", 6)
+        Thread.sleep(1000)
 
-        clickToAddExpense()
         clickToAddCost()
-        fillCostDetails("5", 7)
+        fillCostDetails("15", 5)
+        Thread.sleep(1000)
 
-
+        goAnalysis()
 
         return Pair(true, "Successfully completed the Expense Tracker app test.")
     }
@@ -58,7 +60,7 @@ class ExpenseTrackerTest : Test() {
 
     private suspend fun clickToIncome(): Pair<Boolean, String> {
         logToFile("Clicking to add income button")
-
+        clickToAddExpense()
         val addIncomeButtonContentDesc = "Add Income"
         val addIncomeButton = engine?.retrieveNode(addIncomeButtonContentDesc, Engine.searchTypes.CONTENT_DESC, allNodes = true)
             ?: return Pair(false, "Failed to retrieve 'Add Income' button with content description $addIncomeButtonContentDesc")
@@ -104,14 +106,14 @@ class ExpenseTrackerTest : Test() {
         }
 
         target = Pair("Add Income", Engine.searchTypes.TEXT)
-        val confirmButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
-        val clickedConfirmButton = confirmButton?.let {
+        val addIncomeButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
+        val isAddIncomeButtonClicked = addIncomeButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!clickedConfirmButton) {
-            logToFile("Failed to confirm the date")
-            return Pair(false, "Could not click to confirm")
+        if(!isAddIncomeButtonClicked) {
+            logToFile("Failed to save income")
+            return Pair(false, "Could not save income")
         }
 
         logToFile("Successfully selected income type")
@@ -119,6 +121,7 @@ class ExpenseTrackerTest : Test() {
     }
 
     private suspend fun clickToAddCost(): Pair<Boolean, String> {
+        clickToAddExpense()
         val costButton = engine?.retrieveNode("Add Expense", Engine.searchTypes.CONTENT_DESC)
         val target = Pair("Paypal", Engine.searchTypes.TEXT)
         val clickedCostButton = costButton?.let {
@@ -164,18 +167,32 @@ class ExpenseTrackerTest : Test() {
         }
 
         target = Pair("Add Expense", Engine.searchTypes.TEXT)
-        val confirmButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
-        val clickedConfirmButton = confirmButton?.let {
+        val addIncomeButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
+        val isExpenseButtonClicked = addIncomeButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!clickedConfirmButton) {
-            logToFile("Failed to confirm the date")
-            return Pair(false, "Could not click to confirm")
+        if(!isExpenseButtonClicked) {
+            logToFile("Failed to save income")
+            return Pair(false, "Could not save income")
         }
 
         logToFile("Successfully selected income type")
         return Pair(true, "Successfully selected income type")
+    }
+
+    private suspend fun goAnalysis(): Pair<Boolean, String> {
+        val analysisMenuBarButton = engine?.findObjectByClassName("android.view.View")?.get(10)
+        val target = Pair("Statistics", Engine.searchTypes.TEXT)
+        val isAnalysisClicked = analysisMenuBarButton?.let {
+            engine?.click(it, target)
+        } == true
+        if(!isAnalysisClicked) {
+            logToFile("Failed to click on analysis")
+            return Pair(false, "Failed to click on analysis")
+        }
+
+        return Pair(true, "Successfully navigated to Analysis")
     }
 
 }

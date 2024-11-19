@@ -18,22 +18,24 @@ class NewsTest : Test() {
         super.runTests()
         executeTest(::fullNewsAppTest, 1, "News App Automation Test", false)
     }
-
+    private var countries: List<String> = mutableListOf(
+        "United States",
+        "Canada",
+        "Mexico",
+        "Brazil",
+        "India",
+        "Turkey",
+        "Korea",
+        "Thailand"
+    )
     private suspend fun fullNewsAppTest(iterations: Int): Pair<Boolean, String> {
         for (i in 0 until iterations) {
             clickToFirstNew()
             navigateToSearch()
-                search("London")
+            for (i in countries) {
+                search(i)
                 delay(1000)
-                search("Lily")
-                delay(1000)
-                search("Turkey")
-                delay(1000)
-                search("Belgium")
-                delay(1000)
-                search("France")
-            saveNews()
-            navigateToNews()
+            }
             navigateToHome()
         }
         return Pair(true, "Successfully completed the News App test.")
