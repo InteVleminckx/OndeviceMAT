@@ -21,13 +21,20 @@ class FriendzoneTest: Test() {
             for (i in 0 until iterations) {
                 logToFile("Starting test for user: $user")
                 //signIn()
-                navigateToSearch()
-                searchUser(user)
-                clickToFirstSearchResult(user)
-                followUser()
-                goBack()
-                goChats()
-                writeMessageToUser(user)
+                var result = navigateToSearch()
+                if (!result.first) return result
+                result = searchUser(user)
+                if (!result.first) return result
+                result = clickToFirstSearchResult(user)
+                if (!result.first) return result
+                result = followUser()
+                if (!result.first) return result
+                result = goBack()
+                if (!result.first) return result
+                result = goChats()
+                if (!result.first) return result
+                result = writeMessageToUser(user)
+                if (!result.first) return result
             }
         }
         return Pair(true, "Successfully completed the FriendZone App test for all users.")
