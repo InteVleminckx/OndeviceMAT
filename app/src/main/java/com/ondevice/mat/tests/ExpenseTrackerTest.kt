@@ -8,6 +8,7 @@ import kotlin.math.log
 class ExpenseTrackerTest : Test() {
 
     override val packageName = "com.codewithfk.expensetracker.android"
+
     init {
         appName = "ExpenseTracker"
     }
@@ -19,23 +20,35 @@ class ExpenseTrackerTest : Test() {
 
     private suspend fun fullExpenseTrackerAppTest(iterations: Int): Pair<Boolean, String> {
 
-        clickToIncome()
-        fillIncomeDetails("5000", 8)
+        var result = clickToIncome()
+        if (!result.first) return result
+        result = fillIncomeDetails("5000", 8)
+        if (!result.first) return result
         Thread.sleep(1000)
 
-        clickToIncome()
-        fillIncomeDetails("5000", 3)
+        result = clickToIncome()
+        if (!result.first) return result
+        result = fillIncomeDetails("5000", 3)
+        if (!result.first) return result
         Thread.sleep(1000)
 
-        clickToAddCost()
-        fillCostDetails("5", 6)
+        result = clickToAddCost()
+        if (!result.first) return result
+        result = fillCostDetails("5", "Starbucks")
+        if (!result.first) return result
         Thread.sleep(1000)
 
-        clickToAddCost()
-        fillCostDetails("15", 5)
+        result = clickToAddCost()
+        if (!result.first) return result
+        result = fillCostDetails("15", "Grocery")
+        if (!result.first) return result
         Thread.sleep(1000)
 
-        goAnalysis()
+        result = goAnalysis()
+        if (!result.first) return result
+
+        result = goHome()
+        if (!result.first) return result
 
         return Pair(true, "Successfully completed the Expense Tracker app test.")
     }
@@ -43,15 +56,25 @@ class ExpenseTrackerTest : Test() {
     private suspend fun clickToAddExpense(): Pair<Boolean, String> {
         logToFile("Clicking 'Add Expense' button")
 
-        val addExpenseButtonContentDesc= "small floating action button"
-        val addExpenseButton = engine?.retrieveNode(addExpenseButtonContentDesc, Engine.searchTypes.CONTENT_DESC, allNodes = true)
-            ?: return Pair(false, "Failed to retrieve 'Add Expense' button with resource ID: $addExpenseButtonContentDesc")
+        val addExpenseButtonContentDesc = "small floating action button"
+        val addExpenseButton = engine?.retrieveNode(
+            addExpenseButtonContentDesc,
+            Engine.searchTypes.CONTENT_DESC,
+            allNodes = true
+        )
+            ?: return Pair(
+                false,
+                "Failed to retrieve 'Add Expense' button with resource ID: $addExpenseButtonContentDesc"
+            )
 
-        val target = Pair("Good Afternoon", Engine.searchTypes.TEXT)
+        val target = Pair("Add Expense", Engine.searchTypes.CONTENT_DESC)
         val clickedAddExpenseButton = engine?.click(addExpenseButton, target) == true
         if (!clickedAddExpenseButton) {
             logToFile("Failed to click 'Add Expense' button")
-            return Pair(false, "Couldn't click the 'Add Expense' button with resource ID: $addExpenseButtonContentDesc")
+            return Pair(
+                false,
+                "Couldn't click the 'Add Expense' button with resource ID: $addExpenseButtonContentDesc"
+            )
         }
 
         logToFile("Successfully opened 'Add Expense' view.")
@@ -62,13 +85,23 @@ class ExpenseTrackerTest : Test() {
         logToFile("Clicking to add income button")
         clickToAddExpense()
         val addIncomeButtonContentDesc = "Add Income"
-        val addIncomeButton = engine?.retrieveNode(addIncomeButtonContentDesc, Engine.searchTypes.CONTENT_DESC, allNodes = true)
-            ?: return Pair(false, "Failed to retrieve 'Add Income' button with content description $addIncomeButtonContentDesc")
+        val addIncomeButton = engine?.retrieveNode(
+            addIncomeButtonContentDesc,
+            Engine.searchTypes.CONTENT_DESC,
+            allNodes = true
+        )
+            ?: return Pair(
+                false,
+                "Failed to retrieve 'Add Income' button with content description $addIncomeButtonContentDesc"
+            )
         val target = Pair("Add Income", Engine.searchTypes.TEXT)
         val clickedAddIncomeButton = engine?.click(addIncomeButton, target) == true
-        if(!clickedAddIncomeButton) {
+        if (!clickedAddIncomeButton) {
             logToFile("Failed to click add income")
-            return Pair(false, "Could not click to Add Income button with content description $addIncomeButtonContentDesc")
+            return Pair(
+                false,
+                "Could not click to Add Income button with content description $addIncomeButtonContentDesc"
+            )
         }
         logToFile("Successfully clicked 'Add Income' button")
         return Pair(true, "Successfully clicked 'Add Income' button")
@@ -78,40 +111,44 @@ class ExpenseTrackerTest : Test() {
         logToFile("Creating income")
 
         val incomeTypeButton = engine?.findObjectByClassName("android.widget.Spinner")?.get(0)
-        var target = Pair("Paypal", Engine.searchTypes.TEXT)
+        var target = Pair("Freelance", Engine.searchTypes.TEXT)
         val clickedIncomeTypeButton = incomeTypeButton?.let { engine?.click(it, target) } == true
 
-        if(!clickedIncomeTypeButton) {
+        if (!clickedIncomeTypeButton) {
             logToFile("Failed to click select income type")
             return Pair(false, "Could not select income type")
         }
 
         target = Pair("$", Engine.searchTypes.TEXT)
-        val newIncomeTypeButton = engine?.findObjectByClassName("android.view.View")?.get(7)
+        val newIncomeTypeButton = engine?.findObjectByClassNameAndChildText("android.view.View", "Salary")
         val clickedNewIncomeTypeButton = newIncomeTypeButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!clickedNewIncomeTypeButton) {
+        if (!clickedNewIncomeTypeButton) {
             logToFile("Could not clicked to salary")
             return Pair(false, "Could not clicked to salary")
         }
 
-        val amountField = engine?.retrieveNode("$", Engine.searchTypes.TEXT)  ?: return Pair(false, "Failed to retrieve amount fill text  field ")
-        val filledAmountField =  engine?.fillTextBox(amountField, amount, "$$amount", Engine.searchTypes.TEXT) == true
+        val amountField = engine?.retrieveNode("$", Engine.searchTypes.TEXT) ?: return Pair(
+            false,
+            "Failed to retrieve amount fill text  field "
+        )
+        val filledAmountField =
+            engine?.fillTextBox(amountField, amount, "$$amount", Engine.searchTypes.TEXT) == true
 
         if (!filledAmountField) {
             logToFile("Could not fill the amount field")
             return Pair(false, "Could not fill the amount field")
         }
 
-        target = Pair("Add Income", Engine.searchTypes.TEXT)
+        target = Pair("Recent", Engine.searchTypes.TEXT)
         val addIncomeButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
         val isAddIncomeButtonClicked = addIncomeButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!isAddIncomeButtonClicked) {
+        if (!isAddIncomeButtonClicked) {
             logToFile("Failed to save income")
             return Pair(false, "Could not save income")
         }
@@ -123,12 +160,12 @@ class ExpenseTrackerTest : Test() {
     private suspend fun clickToAddCost(): Pair<Boolean, String> {
         clickToAddExpense()
         val costButton = engine?.retrieveNode("Add Expense", Engine.searchTypes.CONTENT_DESC)
-        val target = Pair("Paypal", Engine.searchTypes.TEXT)
+        val target = Pair("Add Expense", Engine.searchTypes.TEXT)
         val clickedCostButton = costButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!clickedCostButton) {
+        if (!clickedCostButton) {
             logToFile("Failed to click add cost button")
             return Pair(false, "Could not click to add cost button")
         }
@@ -137,42 +174,46 @@ class ExpenseTrackerTest : Test() {
         return Pair(true, "Successfully clicked to add cost")
     }
 
-    private suspend fun fillCostDetails(amount: String, type: Int): Pair<Boolean, String> {
+    private suspend fun fillCostDetails(amount: String, type: String): Pair<Boolean, String> {
         val costTypeButton = engine?.findObjectByClassName("android.widget.Spinner")?.get(0)
-        var target = Pair("Grocery", Engine.searchTypes.TEXT)
+        var target = Pair("Entertainment", Engine.searchTypes.TEXT)
         val clickedCostTypeButton = costTypeButton?.let { engine?.click(it, target) } == true
 
-        if(!clickedCostTypeButton) {
+        if (!clickedCostTypeButton) {
             logToFile("Failed to click select cost type")
             return Pair(false, "Could not select cost type")
         }
 
         target = Pair("$", Engine.searchTypes.TEXT)
-        val newIncomeTypeButton = engine?.findObjectByClassName("android.view.View")?.get(type)
+        val newIncomeTypeButton = engine?.findObjectByClassNameAndChildText("android.view.View", type)
         val clickedNewIncomeTypeButton = newIncomeTypeButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!clickedNewIncomeTypeButton) {
+        if (!clickedNewIncomeTypeButton) {
             logToFile("Could not clicked to salary")
             return Pair(false, "Could not clicked to salary")
         }
 
-        val amountField = engine?.retrieveNode("$", Engine.searchTypes.TEXT)  ?: return Pair(false, "Failed to retrieve amount fill text  field ")
-        val filledAmountField =  engine?.fillTextBox(amountField, amount, "$$amount", Engine.searchTypes.TEXT) == true
+        val amountField = engine?.retrieveNode("$", Engine.searchTypes.TEXT) ?: return Pair(
+            false,
+            "Failed to retrieve amount fill text  field "
+        )
+        val filledAmountField =
+            engine?.fillTextBox(amountField, amount, "$$amount", Engine.searchTypes.TEXT) == true
 
         if (!filledAmountField) {
             logToFile("Could not fill the amount field")
             return Pair(false, "Could not fill the amount field")
         }
 
-        target = Pair("Add Expense", Engine.searchTypes.TEXT)
+        target = Pair("Recent", Engine.searchTypes.TEXT)
         val addIncomeButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
         val isExpenseButtonClicked = addIncomeButton?.let {
             engine?.click(it, target)
         } == true
 
-        if(!isExpenseButtonClicked) {
+        if (!isExpenseButtonClicked) {
             logToFile("Failed to save income")
             return Pair(false, "Could not save income")
         }
@@ -187,7 +228,7 @@ class ExpenseTrackerTest : Test() {
         val isAnalysisClicked = analysisMenuBarButton?.let {
             engine?.click(it, target)
         } == true
-        if(!isAnalysisClicked) {
+        if (!isAnalysisClicked) {
             logToFile("Failed to click on analysis")
             return Pair(false, "Failed to click on analysis")
         }
@@ -195,4 +236,17 @@ class ExpenseTrackerTest : Test() {
         return Pair(true, "Successfully navigated to Analysis")
     }
 
+    private suspend fun goHome(): Pair<Boolean, String> {
+        val homeMenuBarButton = engine?.findObjectByClassName("android.view.View")?.get(7)
+        val target = Pair("Recent", Engine.searchTypes.TEXT)
+        val isAnalysisClicked = homeMenuBarButton?.let {
+            engine?.click(it, target)
+        } == true
+        if (!isAnalysisClicked) {
+            logToFile("Failed to click on home")
+            return Pair(false, "Failed to click on home")
+        }
+
+        return Pair(true, "Successfully navigated to Home")
+    }
 }

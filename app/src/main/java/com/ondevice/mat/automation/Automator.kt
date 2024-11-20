@@ -70,7 +70,10 @@ class Automator(accessService: MATAccessibilityService) {
         val testCase = explorer.targetTestClass(targetApk)
         if (testCase != null) {
             testCase.setup(engine)
-            testCase.runTests()
+            for (i in 0 until 12 ) {
+                testCase.runTests()
+                delay(1000)
+            }
         }
     }
 
