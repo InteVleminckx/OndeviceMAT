@@ -67,11 +67,41 @@ class Parser(private val service: MATAccessibilityService) {
                nodes.add(node)
            }
         }
-
         return nodes;
-
     }
 
+    fun fastSearch(searchTerm: String, searchTypes: Engine.searchTypes, node: NodeInfo? = null): NodeInfo? {
+        try {
+
+            var nodeInfo = node
+            if (nodeInfo == null) {
+                nodeInfo = NodeInfo(service.rootInActiveWindow)
+            }
+
+            val found = when (searchTypes) {
+                Engine.searchTypes.TEXT -> nodeInfo.nodeText().contains(searchTerm)
+                Engine.searchTypes.RESOURCE_ID -> nodeInfo.nodeResourceId().contains(searchTerm)
+                Engine.searchTypes.CONTENT_DESC -> nodeInfo.nodeContentDescription().contains(searchTerm)
+            }
+
+            if (found) {
+                return nodeInfo
+            }
+
+            for (i in 0 until nodeInfo.childCount()) {
+                val result = fastSearch(searchTerm, searchTypes, nodeInfo.getChild(i))
+                if (result != null) {
+                    return result
+                }
+            }
+
+        } catch (e: JSONException) {
+            e.printStackTrace()
+            return null
+        }
+
+        return null
+    }
 
 
 }
