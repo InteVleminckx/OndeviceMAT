@@ -84,10 +84,10 @@ class FriendzoneTest : Test() {
     private suspend fun navigateToSearch(): Pair<Boolean, String> {
 
         var all_ojbs = engine?.findObjectByClassName("android.view.View")
-        val searchButton = all_ojbs?.get(all_ojbs.size - 5)
+        val searchButton = all_ojbs?.get(all_ojbs.size - 6)
         val target = Pair("SEARCH", Engine.searchTypes.TEXT)
         val isSearchButtonClicked = searchButton?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
         if (!isSearchButtonClicked) {
             logToFile("Failed to navigate search")
@@ -117,7 +117,7 @@ class FriendzoneTest : Test() {
         val target = Pair(userName, Engine.searchTypes.TEXT)
         val firstResultRow = engine?.findObjectByClassName("android.view.View")?.get(5)
         val isFirstResultClicked = firstResultRow?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
         if (!isFirstResultClicked) {
             logToFile("Unsuccessful to click to first result")
@@ -132,7 +132,7 @@ class FriendzoneTest : Test() {
         val target = Pair("followers", Engine.searchTypes.TEXT)
         val followButton = engine?.findObjectByClassName("android.widget.Button")?.get(0)
         val isFollowButtonPressed = followButton?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
 
         if (!isFollowButtonPressed) {
@@ -148,7 +148,7 @@ class FriendzoneTest : Test() {
         val backButton = engine?.findObjectByClassName("android.view.View")?.get(8)
         val target = Pair("Type your Search", Engine.searchTypes.TEXT)
         val isBackButtonClicked = backButton?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
         if (!isBackButtonClicked) {
             logToFile("Failed to go back")
@@ -163,7 +163,7 @@ class FriendzoneTest : Test() {
         val target = Pair("MESSAGES", Engine.searchTypes.TEXT)
         val messageMenuButton = engine?.findObjectByClassName("android.view.View")?.get(18)
         val isMessagesMenuButtonClicked = messageMenuButton?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
 
         if (!isMessagesMenuButtonClicked) {
@@ -214,7 +214,7 @@ class FriendzoneTest : Test() {
 
         val sendMessageButton = engine?.retrieveNode("Send", Engine.searchTypes.CONTENT_DESC)
         val isSendClicked = sendMessageButton?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
 
         if (!isSendClicked) {
@@ -225,9 +225,9 @@ class FriendzoneTest : Test() {
 
         target = Pair("MESSAGES", Engine.searchTypes.TEXT)
         var all_ojbs = engine?.findObjectByClassName("android.view.View")
-        val backButton = all_ojbs?.get(all_ojbs.size - 3)
+        val backButton = all_ojbs?.get(all_ojbs.size - 4)
         val isBackButtonClicked = backButton?.let {
-            engine?.click(it, target)
+            engine?.click(it, target, ignoreEvent = true)
         } == true
 
         if (!isBackButtonClicked) {

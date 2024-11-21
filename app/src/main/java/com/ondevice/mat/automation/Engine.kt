@@ -118,7 +118,6 @@ class Engine(private val service: MATAccessibilityService) {
             when (searchType) {
                 searchTypes.TEXT -> node.nodeText()
                     .contains(searchTerm) && (classRestriction.isEmpty() || classRestriction == node.nodeClass())
-
                 searchTypes.RESOURCE_ID -> node.nodeResourceId().contains(searchTerm)
                 searchTypes.CONTENT_DESC -> node.nodeContentDescription().contains(searchTerm)
             }
@@ -223,7 +222,8 @@ class Engine(private val service: MATAccessibilityService) {
         node: NodeInfo,
         target: Pair<String, searchTypes>,
         changesScreenContent: Boolean = true,
-        coordinates: Boolean = false
+        coordinates: Boolean = false,
+        ignoreEvent: Boolean = false
     ): Boolean {
 
         var cur_node = node
@@ -245,9 +245,13 @@ class Engine(private val service: MATAccessibilityService) {
         } else {
             interactor.click(cur_node)
         }
-
+        var isInteractionSucceeded = true
+        if (!ignoreEvent) {
+            isInteractionSucceeded = checkInteractionSucceeded()
+        } else {
+            delay(250)
+        }
         // Check if interaction found place using the listener
-        var isInteractionSucceeded = checkInteractionSucceeded()
         Log.v("DebugTag", "Interaction succeed: $isInteractionSucceeded")
 
         // If the content of the screen need to be changed, check this happened and it stopped changing

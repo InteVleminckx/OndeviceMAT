@@ -80,7 +80,7 @@ class NewsTest : Test() {
             return Pair(false, "Failed to fill the field")
         }
 
-        logToGlobalFile("Successfully searched the word: $text")
+        logToFile("Successfully searched the word: $text")
         return Pair(true, "Successfully searched the word: $text")
     }
 

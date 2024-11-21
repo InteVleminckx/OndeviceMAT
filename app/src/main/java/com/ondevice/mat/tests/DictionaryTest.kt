@@ -18,7 +18,7 @@ class DictionaryTest : Test() {
     }
 
     private suspend fun fullDictionaryAppTest(iterations: Int): Pair<Boolean, String> {
-        val wordsToSearch = listOf("Word", "baby", "love", "sun", "moon", "sky", "flower", "tree", "rain", "wind", "light")
+        val wordsToSearch = listOf("word", "baby", "love", "sun", "moon", "sky", "flower", "tree", "rain", "wind", "light")
 
         for (i in 0 until iterations) {
             logToFile("Iteration ${i + 1}")
@@ -38,6 +38,7 @@ class DictionaryTest : Test() {
         val searchField = engine?.findObjectByClassName("android.widget.EditText")?.get(0)
             ?: return Pair(false, "Failed to retrieve search field")
         val filledSearchField = engine?.fillTextBox(searchField, word, word, Engine.searchTypes.TEXT) == true
+        logToFile("fill text box")
         if (!filledSearchField) {
             logToFile("Failed to fill search field")
             return Pair(false, "Could not fill the search field with word: $word")
@@ -46,7 +47,9 @@ class DictionaryTest : Test() {
         val searchButton = engine?.retrieveNode(searchButtonContentDesc, Engine.searchTypes.CONTENT_DESC, allNodes = true)
             ?: return Pair(false, "Failed to retrieve search button with content description $searchButtonContentDesc")
 
-        val clickedSearchButton = engine?.click(searchButton, Pair(searchButtonContentDesc, Engine.searchTypes.CONTENT_DESC)) == true
+        logToFile("Retrieve search")
+
+        val clickedSearchButton = engine?.click(searchButton, Pair(searchButtonContentDesc, Engine.searchTypes.CONTENT_DESC), ignoreEvent = true) == true
         if (!clickedSearchButton) {
             logToFile("Failed to click search button")
             return Pair(false, "Could not click the search button for word: $word")
