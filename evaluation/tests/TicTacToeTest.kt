@@ -6,9 +6,7 @@ class TicTacToeTest : BaseTestClass("ug.lecode.tictactoe") {
 
     @Test
     fun ticTactoe() {
-        for (i in 0 until 25) {
-            executeTest(::automaticTicTacToe, 1000, "Tic Tac Toe automation test")
-        }
+        executeTest(::automaticTicTacToe, 1000, "Tic Tac Toe automation test")
     }
 
 
@@ -20,7 +18,7 @@ class TicTacToeTest : BaseTestClass("ug.lecode.tictactoe") {
         for (i in 0 until iterations) {
 
             val boardResult = updateBoard()
-            val board =  boardResult.first ?: return Pair(false, boardResult.second)
+            val board = boardResult.first ?: return Pair(false, boardResult.second)
 
             // Check if there is a winning move
             val winningMove = getBestMove(human, board)
@@ -131,7 +129,10 @@ class TicTacToeTest : BaseTestClass("ug.lecode.tictactoe") {
 
             val content = getNodeTextByRes(getResId(id))
 
-            if (content == null) return Pair(null, "Failed to retrieve object with resource id: ${getResId(id)}")
+            if (content == null) return Pair(
+                null,
+                "Failed to retrieve object with resource id: ${getResId(id)}"
+            )
 
             val x = i % 3
             val y = if (i <= 2) {

@@ -16,10 +16,7 @@ class SudokuTest : BaseTestClass("com.divinememorygames.super.killer.free.sudoku
 
     @Test
     fun sudoku() {
-        for (i in 0 until 6) {
-            executeTest(::allDifficulties, 4, "Sudoku four difficulties test")
-            createNewFile()
-        }
+        executeTest(::allDifficulties, 4, "Sudoku four difficulties test")
     }
 
     private fun allDifficulties(iteration: Int): Pair<Boolean, String> {

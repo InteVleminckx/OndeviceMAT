@@ -14,7 +14,6 @@ class SimpleDoTest : BaseTestClass("me.jamesfrost.simpledo") {
     @Test
     fun simpleDo() {
         var result = executeTest(::fullApplicationTest, 1000, "SimpleDo full application test")
-
         assertEquals("Full application test of simple do succeed", result);
     }
 

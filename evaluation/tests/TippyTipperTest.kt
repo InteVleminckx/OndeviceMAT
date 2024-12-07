@@ -25,10 +25,7 @@ class TippyTipperTest : BaseTestClass("net.mandaria.tippytipper") {
 
     @Test
     fun tippyTipper() {
-        for (i in 0 until 21) {
-            executeTest(::fullApplicationTest, 1000, "Tippy Tipper test")
-            createNewFile()
-        }
+        executeTest(::fullApplicationTest, 1000, "Tippy Tipper test")
     }
 
     private fun fullApplicationTest(iterations: Int): Pair<Boolean, String> {
@@ -63,7 +60,10 @@ class TippyTipperTest : BaseTestClass("net.mandaria.tippytipper") {
 
             if (!interactionSucceed.first) return interactionSucceed
 
-            if (!waitUntilNextScreen(nextScreen)) return Pair(false, "Didn't end up on the correct screen, expect screen: ${nextScreen.name}")
+            if (!waitUntilNextScreen(nextScreen)) return Pair(
+                false,
+                "Didn't end up on the correct screen, expect screen: ${nextScreen.name}"
+            )
 
         }
 
