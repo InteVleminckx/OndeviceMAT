@@ -5,8 +5,10 @@ import android.util.Log
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.uiautomator.By
 import androidx.test.uiautomator.UiDevice
+import androidx.test.uiautomator.UiObject
 import androidx.test.uiautomator.UiObject2
 import androidx.test.uiautomator.UiObjectNotFoundException
+import androidx.test.uiautomator.UiScrollable
 import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import java.io.File
@@ -14,6 +16,7 @@ import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.reflect.KFunction
 import kotlin.reflect.KFunction1
 import kotlin.system.measureTimeMillis
 
@@ -231,5 +234,29 @@ open class BaseTestClass(name: String) {
         return device.wait(Until.hasObject(By.res(res)), time) != null
     }
 
+    fun gestureScrollDown(): Pair<Boolean, String> {
+        return try {
+            val scrollable = UiScrollable(UiSelector().scrollable(true))
+            scrollable.scrollForward()
+
+            Pair(true, "Successfully scrolled down using UiScrollable.")
+        } catch (e: Exception) {
+            logToFile("Failed to scroll using UiScrollable: ${e.message}")
+            Log.e("scrollDown", "Error: ${e.message}")
+            Pair(false, "Failed to scroll using UiScrollable.")
+        }
+    }
+
+    fun findObjectByClassAndInstance(className: String, instance: Int): UiObject? {
+        return try {
+            val obj = device.findObject(
+                UiSelector().className(className).instance(instance)
+            )
+            obj
+        } catch (e: UiObjectNotFoundException) {
+            Log.v(testTag, "Could not find object with className: $className and instance: $instance")
+            null
+        }
+    }
 
 }
