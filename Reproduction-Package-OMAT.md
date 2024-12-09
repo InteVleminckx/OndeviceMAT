@@ -23,7 +23,7 @@ This package provides all necessary steps to reproduce the results of the paper 
 3) You can now stop the application in the IDE and close any windows that were opened by the application.
 4) The O-MAT app is now fully installed on the device and can be launched directly from the mobile device. It no longer needs to be connected to the computer.## Running test cases
 
-# Running Test Cases
+## Running Test Cases
 
 1) Launch the O-MAT application. You will be prompted to grant certain permissions.
 2) The first permission required is for the accessibility service. The app will automatically open the relevant settings window. Enable "On-device MAT access service" and return to the previous screen by pressing the arrow at the top left.
@@ -34,6 +34,11 @@ This package provides all necessary steps to reproduce the results of the paper 
 6) Once the test is complete, the logs will be saved in the TestLogs folder located in the Documents directory of the device (Files application).
 7) Note: To start a new test, first close the O-MAT application and disable the accessibility service (can be found under settings > accessibility). Then repeat the process from step 1 in this section.
 
-# Running the Test Cases for emulator and the Server-client model
+## Running the Test Cases for emulator and the Server-client model
+
 1) To execute these test cases, you will need an additional repository: https://anonymous.4open.science/r/OffDeviceTesting-4606/
 2) The repository contains a README file with detailed instructions on how to run and add test cases.
+
+## Results
+
+Results of the simulations can be found in the supplementary-material zip folder.
