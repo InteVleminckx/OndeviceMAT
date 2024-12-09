@@ -35,5 +35,5 @@ This package provides all necessary steps to reproduce the results of the paper 
 7) Note: To start a new test, first close the O-MAT application and disable the accessibility service (can be found under settings > accessibility). Then repeat the process from step 1 in this section.
 
 # Running the Test Cases for emulator and the Server-client model
-1) To execute these test cases, you will need an additional repository: https://github.com/InteVleminckx/OffDeviceTesting
+1) To execute these test cases, you will need an additional repository: https://anonymous.4open.science/r/OffDeviceTesting-4606/
 2) The repository contains a README file with detailed instructions on how to run and add test cases.
