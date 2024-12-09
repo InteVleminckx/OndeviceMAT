@@ -14,7 +14,7 @@ This package provides all necessary steps to reproduce the results of the paper 
 1) Connect a mobile device to your computer. This can be a physical device connected via USB or over the network, or an emulator.
 2) Use the command ```adb devices``` in your terminal to verify that the device is connected.
 3) Navigate to the evaluated/applications directory in the project folder.
-4) This folder contains four applications. Install each application using the command: ```adb install <application_name>.apk```
+4) This folder contains nine applications. Install each application using the command: ```adb install <application_name>.apk```
 
 ## Installing the O-MAT application
 
