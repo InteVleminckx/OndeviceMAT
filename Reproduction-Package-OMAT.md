@@ -36,7 +36,7 @@ This package provides all necessary steps to reproduce the results of the paper 
 
 ## Running the Test Cases for emulator and the Server-client model
 
-1) To execute these test cases, you will need an additional repository: https://anonymous.4open.science/r/OffDeviceTesting-4606/
+1) To execute these test cases, you will need an additional repository: https://github.com/InteVleminckx/OffDeviceTesting/
 2) The repository contains a README file with detailed instructions on how to run and add test cases.
 
 ## Results
